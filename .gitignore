@@ -4,3 +4,7 @@
 /profile.out
 /coverage.txt
 /sloppose
+
+# Special case, we are just interested in sloppyio sourceCode
+vendor/github.com/sloppyio/cli/*
+!vendor/github.com/sloppyio/cli/src

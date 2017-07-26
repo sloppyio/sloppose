@@ -44,6 +44,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/sloppyio/cli"
+  packages = ["src/api"]
+  revision = "cb1f169a744da4d5481233f81c1e4a44d56a39de"
+  version = "v1.8.0"
+
+[[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
@@ -88,6 +94,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f78fd958d335d0be5b6a3d4855680793ed0b9503d74a5b7f13639c7506b1dda3"
+  inputs-digest = "34afd1fb028d44bd6a331b1a55c7204c0e4b81205c4beb947e6d3af69025cb13"
   solver-name = "gps-cdcl"
   solver-version = 1
