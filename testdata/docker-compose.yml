@@ -1,0 +1,31 @@
+version: "2"
+
+services:
+  busy_env:
+    image: busybox
+    env_file: testdata/test.env
+    volumes:
+      - whatever:/tmp
+  wordpress:
+   depends_on:
+     - db
+   image: wordpress:4.7.4
+   ports:
+     - "8000:80"
+   restart: always
+   environment:
+     WORDPRESS_DB_HOST: db:3306
+     WORDPRESS_DB_USER: wordpress
+     WORDPRESS_DB_PASSWORD: wordpress
+  db:
+   image: mysql:8.0.0
+   volumes:
+     - db_data:/var/lib/mysql
+   restart: always
+   environment:
+     MYSQL_ROOT_PASSWORD: somewordpress
+     MYSQL_DATABASE: wordpress
+     MYSQL_USER: wordpress
+     MYSQL_PASSWORD: wordpress
+volumes:
+    db_data:
