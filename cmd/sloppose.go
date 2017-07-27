@@ -17,6 +17,7 @@ func main() {
 		args = []string{"version"}
 	}
 
+	// TODO move command handling to cli struct
 	if _, ok := command.Commands[args[0]]; ok {
 		cmd, err := command.Commands[args[0]]()
 		if err != nil {

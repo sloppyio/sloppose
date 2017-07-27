@@ -16,12 +16,15 @@ func (c *Convert) Run(args []string) error {
 		return err
 	}
 
-	sloppyService, err := converter.NewSloppyFile(cf)
+	sf, err := converter.NewSloppyFile(cf)
 	if err != nil {
 		println(err)
 		return err
 	}
 
+	linker := &converter.Linker{}
+	linker.Resolve(cf, sf)
+
 	writer := &converter.YAMLWriter{}
-	return writer.WriteFile(sloppyService, "out.yml")
+	return writer.WriteFile(sf, "out.yml")
 }

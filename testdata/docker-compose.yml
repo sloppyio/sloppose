@@ -4,9 +4,11 @@ services:
   busy_env:
     image: busybox
     env_file: testdata/test.env
-    volumes:
-      - whatever:/tmp
     command: "sleep 20"
+    depends_on:
+      - wordpress
+    links:
+      - db
   wordpress:
    depends_on:
      - db
