@@ -10,6 +10,7 @@ import (
 
 const (
 	// defaults
+	domainUri      = "$URI"
 	instanceCount  = 1
 	instanceMemory = 512
 	volumeSize     = "8GB"
@@ -32,8 +33,9 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 	}
 
 	for service, config := range cf.ServiceConfigs.All() {
-		m, i := instanceMemory, instanceCount
+		m, i, uri := instanceMemory, instanceCount, domainUri
 		app := &sloppy.App{
+			Domain:    &sloppy.Domain{URI: &uri},
 			Memory:    &m,
 			Instances: &i,
 			Image:     &config.Image,

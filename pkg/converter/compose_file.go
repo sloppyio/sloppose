@@ -12,7 +12,7 @@ import (
 const defaultFileName = "docker-compose.yml"
 
 type ComposeFile struct {
-	ProjectName string
+	ProjectName    string
 	ServiceConfigs *config.ServiceConfigs
 }
 

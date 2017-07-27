@@ -6,7 +6,7 @@ import (
 	"github.com/ghodss/yaml"
 )
 
-type YAMLWriter struct {}
+type YAMLWriter struct{}
 
 func (w *YAMLWriter) WriteFile(i interface{}, path string) error {
 	bytes, err := yaml.Marshal(i)
