@@ -12,6 +12,7 @@ import (
 const defaultFileName = "docker-compose.yml"
 
 type ComposeFile struct {
+	ProjectName string
 	ServiceConfigs *config.ServiceConfigs
 }
 
@@ -33,13 +34,18 @@ func NewComposeFile(files []string) (*ComposeFile, error) {
 		buf = append(buf, b)
 	}
 
-	p := project.NewProject(&project.Context{
+	ctx := &project.Context{
 		ComposeBytes: buf,
-	}, nil, nil)
+	}
+
+	p := project.NewProject(ctx, nil, nil)
 	err := p.Parse()
 	if err != nil {
 		return nil, err
 	}
+
+	// available after project.Parse()
+	cf.ProjectName = ctx.ProjectName
 
 	cfg := *p.ServiceConfigs
 	cf.ServiceConfigs = &cfg
@@ -52,12 +58,12 @@ func NewComposeFile(files []string) (*ComposeFile, error) {
 // - implement hack for v3 (or bridge: https://github.com/aanand/compose-file)
 // - https://github.com/docker/libcompose/issues/421
 func (cf *ComposeFile) readFromFile(filename string) ([]byte, error) {
-	pwd, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
 
-	bytes, err := ioutil.ReadFile(filepath.Join(pwd, filename))
+	bytes, err := ioutil.ReadFile(filepath.Join(cwd, filename))
 	if err != nil {
 		return nil, err
 	}

@@ -6,6 +6,7 @@ services:
     env_file: testdata/test.env
     volumes:
       - whatever:/tmp
+    command: "sleep 20"
   wordpress:
    depends_on:
      - db
