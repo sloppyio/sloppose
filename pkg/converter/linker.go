@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	fqdnTemplate     = "%s.%s.%s" // app.service.project
-	lowercasePattern = "^[a-z]*"
+	fqdnTemplate    = "%s.%s.%s" // app.service.project
+	hostPortPattern = "([a-z][a-z0-9_-]+):[0-9]+" // sloppy appName conform
 )
 
-var lowercase *regexp.Regexp = regexp.MustCompile(lowercasePattern)
+var hostPortRegex *regexp.Regexp = regexp.MustCompile(hostPortPattern)
 
 type Linker struct {
 	links []*link
@@ -70,7 +70,11 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 		for key, val := range link.app.EnvVars {
 			if strings.Contains(key, "HOST") ||
 				strings.Index(val, ":") != -1 {
-				match := lowercase.FindString(val)
+				matches := hostPortRegex.FindStringSubmatch(val)
+				if matches == nil {
+					continue
+				}
+				match := matches[1]
 				targetLink := l.GetByApp(match)
 				//fmt.Println("Replacing:", key, val, match, targetLink.fqdn)
 				if targetLink == nil {
