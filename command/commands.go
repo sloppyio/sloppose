@@ -1,6 +1,6 @@
 package command
 
-import "sevenval.com/sloppose/cli"
+import "github.com/sloppyio/sloppose/cli"
 
 var Commands map[string]cli.CommandFactory
 

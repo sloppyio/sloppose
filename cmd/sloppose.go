@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"sevenval.com/sloppose/command"
+	"github.com/sloppyio/sloppose/command"
 )
 
 func main() {

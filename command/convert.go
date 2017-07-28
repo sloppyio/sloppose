@@ -4,7 +4,7 @@ import (
 	"flag"
 	"strings"
 
-	"sevenval.com/sloppose/pkg/converter"
+	"github.com/sloppyio/sloppose/pkg/converter"
 )
 
 type Convert struct{}
