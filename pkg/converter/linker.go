@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	fqdnTemplate    = "%s.%s.%s" // app.service.project
+	fqdnTemplate    = "%s.%s.%s"                  // app.service.project
 	hostPortPattern = "([a-z][a-z0-9_-]+):[0-9]+" // sloppy appName conform
 )
 

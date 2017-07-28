@@ -17,3 +17,9 @@ Supports docker-compose versions **2** and **3**.
 **Projectname**:
 * can be set with `COMPOSE_PROJECT_NAME` environment variable or with parameter as seen above.
 * defaults to current working dir
+
+## Development
+
+Checkout to `$GOPATH/src/github.com/sloppyio/sloppose`
+
+Create a development build: `make build-dev`
