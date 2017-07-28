@@ -30,7 +30,13 @@ func (c *Convert) Run(args []string) error {
 		return err
 	}
 
-	cf, err := converter.NewComposeFile(flagSet.Args(), projectName)
+	reader := &converter.ComposeReader{}
+	buf, err := reader.ReadAll(flagSet.Args())
+	if err != nil {
+		return err
+	}
+
+	cf, err := converter.NewComposeFile(buf, projectName)
 	if err != nil {
 		return err
 	}

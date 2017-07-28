@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -34,6 +35,9 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 
 	for service, config := range cf.ServiceConfigs.All() {
 		m, i, uri := instanceMemory, instanceCount, domainUri
+		if config.DomainName != "" {
+			uri = config.DomainName
+		}
 		app := &sloppy.App{
 			Domain:    &sloppy.Domain{URI: &uri},
 			Memory:    &m,
@@ -81,6 +85,9 @@ func (sf *SloppyFile) convertPorts(ports []string) (pm []*sloppy.PortMap, err er
 	const sep = ":"
 	for _, portMap := range ports {
 		var port int
+		if strings.Index(portMap, "-") > -1 {
+			return nil, fmt.Errorf("Port ranges are not supported: %q", portMap)
+		}
 		if strings.Index(portMap, sep) > -1 {
 			port, err = strconv.Atoi(strings.Split(portMap, sep)[1])
 		} else {
