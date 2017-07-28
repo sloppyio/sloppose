@@ -16,7 +16,7 @@ type ComposeFile struct {
 	ServiceConfigs *config.ServiceConfigs
 }
 
-func NewComposeFile(files []string) (*ComposeFile, error) {
+func NewComposeFile(files []string, projectName string) (*ComposeFile, error) {
 	cf, buf := &ComposeFile{}, [][]byte{}
 	if len(files) > 0 {
 		for _, file := range files {
@@ -37,6 +37,9 @@ func NewComposeFile(files []string) (*ComposeFile, error) {
 	ctx := &project.Context{
 		ComposeBytes: buf,
 	}
+	if projectName != "" {
+		ctx.ProjectName = projectName
+	}
 
 	p := project.NewProject(ctx, nil, nil)
 	err := p.Parse()
@@ -44,7 +47,7 @@ func NewComposeFile(files []string) (*ComposeFile, error) {
 		return nil, err
 	}
 
-	// available after project.Parse()
+	// available after project.Parse() if not previously set
 	cf.ProjectName = ctx.ProjectName
 
 	cfg := *p.ServiceConfigs

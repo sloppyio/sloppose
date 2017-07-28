@@ -25,7 +25,8 @@ func main() {
 		}
 		err = cmd.Run(args[1:])
 		if err != nil {
-			fmt.Printf(usageTemplate, cmd.Help())
+			fmt.Println("Error:", err.Error())
+			fmt.Println(cmd.Help())
 		}
 	} else {
 		// TODO print possible commands
