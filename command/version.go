@@ -12,6 +12,6 @@ func (v *Version) Help() string {
 }
 
 func (v *Version) Run(args []string) error {
-	fmt.Printf("Version: %s, Build: %s", VersionName, BuildName)
+	fmt.Printf("Version: %s, Build: %s\n", VersionName, BuildName)
 	return nil
 }
