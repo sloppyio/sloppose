@@ -1,0 +1,29 @@
+language: go
+env:
+- GIMME_OS=linux GIMME_ARCH=amd64
+- GIMME_OS=darwin GIMME_ARCH=amd64
+- GIMME_OS=windows GIMME_ARCH=amd64
+sudo: required
+go:
+- 1.8.3
+- tip
+install: 
+script:
+- make
+matrix:
+  fast_finish: true
+  allow_failures:
+  - go: tip
+deploy:
+  provider: releases
+  api_key:
+    secure: TadgNCcj0JXu33Pu77U4DHCnBdKrmDJg+TivMZsmkRA7uXxzTLgvPyuR9drH2HJ1THHtA6BGRKs8uUm50JC8KLQTMwdDm2Dknb6JM71yO10jSnmM2wfuTjdNjVk89muDkoYaz7VxDK85dKdj1A+WavDLYmApEJJut3KmugQAu5SRNO72FVz//hjaJfEcAV8AxIXPrKJvk/jawL3KSthMtRG4AF69O9jhKAs5+GIojyjsHgI1Ovdew8S/ERDZTnOLDksROJwG5Cm6EaP2OFi0LxnGOhXI6Ht38VGGBepwWHtFNgxs/vUsJFVKCU13ezmBV9WTU07u3rdr+Rd2Jt8a/0KqRkmxFR97vuYz8DnhptAPodyLd+xMlmZ54Bq2Q9E9XmmoA1UX3e8x2zTfEOSp/3hCO/E3RhLX4pjGnzoDK42VVLPA9PTUisPhO0UpQTn7bAstUnj48x+3gDdMw0EGaYMSzHmcDV9iuXCHj2iUR8Puc9kA+OSPg/WnxIN6S3h7qNpsdoVRMVSEXv2s/fkbcnzMI2t2/hgvqWzYYwwW0riUM25kfkCwopvIOZk+1aI/W6auRzF6wdfuHxe2Tb2qOz0CPsS5yu4rSd4dxqhAyF/d+MPKfSFqX5uI4UifLHuvfHUUTE09RBAParsSAooSoFOaGtya1SDBpwLDwlRD/RQ=
+  file:
+  - build/darwin_amd64.zip
+  - build/linux_386.zip
+  - build/linux_amd64.zip
+  - build/windows_amd64.zip
+  skip_cleanup: true # prevent file deletion
+  on:
+    repo: sloppyio/sloppose
+    tags: true

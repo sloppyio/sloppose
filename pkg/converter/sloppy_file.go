@@ -11,10 +11,10 @@ import (
 
 const (
 	// defaults
-	domainUri      = "$URI"
-	instanceCount  = 1
-	instanceMemory = 512
-	volumeSize     = "8GB"
+	DomainUri      = "$URI"
+	InstanceCount  = 1
+	InstanceMemory = 512
+	VolumeSize     = "8GB"
 )
 
 type SloppyApps map[string]*SloppyApp
@@ -47,26 +47,29 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 	}
 
 	for service, config := range cf.ServiceConfigs.All() {
-		m, i, uri := instanceMemory, instanceCount, domainUri
+		m, i, uri := InstanceMemory, InstanceCount, DomainUri
 		if config.DomainName != "" {
 			uri = config.DomainName
 		}
 		app := &SloppyApp{
 			App: &sloppy.App{
 				Domain:    &sloppy.Domain{URI: &uri},
-				EnvVars:   config.Environment.ToMap(),
 				Image:     &config.Image,
 				Instances: &i,
 				Memory:    &m,
 				Volumes:   sf.convertVolumes(config.Volumes),
 			},
 			Domain: uri,
-			Env:    config.Environment,
 		}
 
 		// assign command
 		if len(config.Command) > 0 {
 			app.Command = sf.convertCommand(config.Command)
+		}
+
+		if len(config.Environment) > 0 {
+			app.App.EnvVars = config.Environment.ToMap()
+			app.Env = config.Environment
 		}
 
 		// assign ports
@@ -75,7 +78,7 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 			if err != nil {
 				return nil, err
 			}
-			app.PortMappings = portMappings
+			app.App.PortMappings = portMappings
 
 			// In yml format just one port is supported, use the first one.
 			app.Port = portMappings[0].Port
@@ -123,7 +126,7 @@ func (sf *SloppyFile) convertPorts(ports []string) (pm []*sloppy.PortMap, err er
 }
 
 func (sf *SloppyFile) convertVolumes(volumes *compose.Volumes) (v []*sloppy.Volume) {
-	defaultSize := volumeSize
+	defaultSize := VolumeSize
 	if volumes == nil {
 		return
 	}

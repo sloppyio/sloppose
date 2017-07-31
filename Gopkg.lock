@@ -50,6 +50,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/google/go-cmp"
+  packages = ["cmp","cmp/internal/diff","cmp/internal/value"]
+  revision = "a4dcf7614330c5e788565a982c299491a8d8a550"
+
+[[projects]]
   name = "github.com/mattn/go-shellwords"
   packages = ["."]
   revision = "02e3cf038dcea8290e44424da473dd12be796a8a"
@@ -118,6 +124,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "26bfa80ebb54e245e60a3023a414629d22ca8b93d98ffd4ab970fdfb34579885"
+  inputs-digest = "14da699334cded77924e75b9cc54ce6ec534986d1f68381b14edf0d4363bf915"
   solver-name = "gps-cdcl"
   solver-version = 1

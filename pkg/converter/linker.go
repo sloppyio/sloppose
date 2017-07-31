@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	fqdnTemplate    = "%s.%s.%s"                  // app.service.project
-	hostPortPattern = "([a-z][a-z0-9_-]+):[0-9]+" // sloppy appName conform
+	fqdnTemplate    = "%s.%s.%s"                   // app.service.project
+	hostPortPattern = "([a-z]+[a-z0-9_-]?):[0-9]+" // sloppy appName conform
 )
 
 var hostPortRegex *regexp.Regexp = regexp.MustCompile(hostPortPattern)
@@ -78,7 +78,8 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 				targetLink := l.GetByApp(match)
 
 				if targetLink == nil {
-					return fmt.Errorf("Couldn't find app %q", match)
+					fmt.Printf("Couldn't find %q as linkable app. Assuming %q is an external service.\n", match, val)
+					continue
 				}
 
 				targetVar := strings.Replace(
