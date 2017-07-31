@@ -17,12 +17,25 @@ const (
 	volumeSize     = "8GB"
 )
 
-type SloppyApps map[string]*sloppy.App
+type SloppyApps map[string]*SloppyApp
+
+// Special intermediate type to fix the inconsistencies between
+// the yml and json format representation for the sloppy.App struct.
+type SloppyApp struct {
+	*sloppy.App
+	Domain string                  `json:"domain,omitempty"`
+	Env    compose.MaporEqualSlice `json:"env,omitempty"`
+	Port   *int                    `json:"port,omitempty"`
+
+	// hide conflicting fields from sloppy.App
+	EnvVars      map[string]string `json:"-"`
+	PortMappings []*sloppy.PortMap `json:"-"`
+}
 
 type SloppyFile struct {
-	Version  string                `yaml:"version,omitempty"`
-	Project  string                `yaml:"project,omitempty"`
-	Services map[string]SloppyApps `yaml:"services,omitempty"`
+	Version  string                `json:"version,omitempty"`
+	Project  string                `json:"project,omitempty"`
+	Services map[string]SloppyApps `json:"services,omitempty"`
 }
 
 // Map docker-compose.yml to sloppy yml and return representation
@@ -38,13 +51,17 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 		if config.DomainName != "" {
 			uri = config.DomainName
 		}
-		app := &sloppy.App{
-			Domain:    &sloppy.Domain{URI: &uri},
-			Memory:    &m,
-			Instances: &i,
-			Image:     &config.Image,
-			EnvVars:   config.Environment.ToMap(),
-			Volumes:   sf.convertVolumes(config.Volumes),
+		app := &SloppyApp{
+			App: &sloppy.App{
+				Domain:    &sloppy.Domain{URI: &uri},
+				EnvVars:   config.Environment.ToMap(),
+				Image:     &config.Image,
+				Instances: &i,
+				Memory:    &m,
+				Volumes:   sf.convertVolumes(config.Volumes),
+			},
+			Domain: uri,
+			Env:    config.Environment,
 		}
 
 		// assign command
@@ -59,6 +76,9 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 				return nil, err
 			}
 			app.PortMappings = portMappings
+
+			// In yml format just one port is supported, use the first one.
+			app.Port = portMappings[0].Port
 		}
 
 		// TODO implement service to compose-file mapping
