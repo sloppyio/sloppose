@@ -2,6 +2,7 @@ package converter
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -27,7 +28,7 @@ type SloppyApp struct {
 	Env    compose.MaporEqualSlice `json:"env,omitempty"`
 	Port   *int                    `json:"port,omitempty"`
 
-	// hide conflicting fields from sloppy.App
+	// hide conflicting fields from sloppy.App during serialization
 	EnvVars      map[string]string `json:"-"`
 	PortMappings []*sloppy.PortMap `json:"-"`
 }
@@ -90,6 +91,9 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 		//  [][] = app
 		sf.Services["apps"][service] = app
 	}
+
+	sf.sortFields()
+
 	return sf, nil
 }
 
@@ -137,4 +141,16 @@ func (sf *SloppyFile) convertVolumes(volumes *compose.Volumes) (v []*sloppy.Volu
 		})
 	}
 	return
+}
+
+// Sorting the converted string slices ensures that
+// the serialized output is always the same.
+func (sf *SloppyFile) sortFields()  {
+	// ensure that the output is always the same
+	for _, services := range sf.Services {
+		for _, app := range services {
+			sort.Strings(app.Env)
+			sort.Strings(app.Dependencies)
+		}
+	}
 }

@@ -115,6 +115,8 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 		}
 	}
 
+	sf.sortFields()
+
 	return nil
 }
 

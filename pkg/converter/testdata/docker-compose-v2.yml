@@ -10,8 +10,7 @@ services:
     links:
       - db
   wordpress:
-   depends_on:
-     - db
+   domainname: mywords.sloppy.zone
    image: wordpress:4.7.4
    ports:
      - "8000:80"

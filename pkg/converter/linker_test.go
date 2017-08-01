@@ -45,8 +45,8 @@ func TestLinker_Resolve(t *testing.T) {
 						Dependencies: []string{"../apps/b"},
 						Domain:       &sloppy.Domain{URI: ToStrPtr(converter.DomainUri)},
 						EnvVars: map[string]string{
-							"API_URL":  fmt.Sprintf("b.apps.%s:8080", testProjectName),
 							"API_AUTH": "some-external.service:80",
+							"API_URL":  fmt.Sprintf("b.apps.%s:8080", testProjectName),
 						},
 						Image:     ToStrPtr("hugo"),
 						Instances: ToIntPtr(converter.InstanceCount),
@@ -54,8 +54,8 @@ func TestLinker_Resolve(t *testing.T) {
 					},
 					Domain: converter.DomainUri,
 					Env: []string{
-						fmt.Sprintf("API_URL=b.apps.%s:8080", testProjectName),
 						"API_AUTH=some-external.service:80",
+						fmt.Sprintf("API_URL=b.apps.%s:8080", testProjectName),
 					},
 				},
 				"b": &converter.SloppyApp{
