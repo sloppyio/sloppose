@@ -9,78 +9,81 @@ import (
 	"github.com/sloppyio/sloppose/pkg/converter"
 )
 
-var expectedSloppyYml = `project: pkg
+var expectedSloppyYml = `project: sloppy-test
 services:
   apps:
     busy_env:
       cmd: sleep 20
       dependencies:
-      - ../apps/db
       - ../apps/wordpress
-      domain: $URI
       env:
       - VAR_A=1
       - VAR_B=test
       image: busybox
-      instances: 1
-      mem: 256
     db:
       cmd: mysqld
-      domain: $URI
       env:
       - MYSQL_DATABASE=wordpress
       - MYSQL_PASSWORD=wordpress
       - MYSQL_ROOT_PASSWORD=somewordpress
       - MYSQL_USER=wordpress
       image: mysql:8.0.0"
-      instances: 1
-      mem: 256
       volumes:
       - container_path: /var/lib/mysql
-        size: 8GB
     wordpress:
       dependencies:
       - ../apps/db
       domain: mywords.sloppy.zone
       env:
-      - WORDPRESS_DB_HOST=db.apps.pkg:3306
+      - WORDPRESS_DB_HOST=db.apps.sloppy-test:3306
       - WORDPRESS_DB_PASSWORD=wordpress
       - WORDPRESS_DB_USER=wordpress
       image: wordpress:4.7.4
-      instances: 1
-      mem: 256
       port: 80
-      port_mappings:
-      - container_port: 80
 version: v1
 `
 
-func TestNewSloppyFile(t *testing.T) {
+// output should be the same as described above
+var testFiles = []string{
+	"/testdata/docker-compose-v2.yml",
+	"/testdata/docker-compose-v3-simple.yml",
+}
+
+func loadSloppyFile(filename string) (cf *converter.ComposeFile, sf *converter.SloppyFile) {
 	reader := &converter.ComposeReader{}
-	b, err := reader.Read("/testdata/docker-compose-v2.yml")
+	b, err := reader.Read(filename)
 	if err != nil {
-		t.Error(err)
+		panic(err)
 	}
-	cf, err := converter.NewComposeFile([][]byte{b}, "")
+	cf, err = converter.NewComposeFile([][]byte{b}, "sloppy-test")
 	if err != nil {
-		t.Error(err)
+		panic(err)
 	}
 
-	have, err := converter.NewSloppyFile(cf)
+	sf, err = converter.NewSloppyFile(cf)
 	if err != nil {
-		t.Error(err)
+		panic(err)
 	}
 	linker := &converter.Linker{}
-	linker.Resolve(cf, have)
-
-	haveBuf, err := yaml.Marshal(have)
+	err = linker.Resolve(cf, sf)
 	if err != nil {
-		t.Error(err)
+		panic(err)
 	}
+	return
+}
 
-	haveLines := strings.Split(string(haveBuf), "\n")
+func TestNewSloppyFile(t *testing.T) {
 	wantLines := strings.Split(expectedSloppyYml, "\n")
-	if diff := cmp.Diff(haveLines, wantLines); diff != "" {
-		t.Errorf("Result differs: (-got +want)\n%s", diff)
+	for _, testFile := range testFiles {
+		_, have := loadSloppyFile(testFile)
+		haveBuf, err := yaml.Marshal(have)
+		if err != nil {
+			t.Error(err)
+		}
+
+		haveLines := strings.Split(string(haveBuf), "\n")
+		if diff := cmp.Diff(haveLines, wantLines); diff != "" {
+			t.Errorf("Case: %q\nResult differs: (-got +want)\n%s", testFile, diff)
+		}
 	}
 }

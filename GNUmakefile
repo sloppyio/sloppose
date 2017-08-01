@@ -25,7 +25,7 @@ coverage-stats:
 	go tool cover -func=coverage.txt
 
 coverage-report:
-	goveralls -coverprofile=coverage.txt -service=travis-ci -repotoken ${COVERALLS_TOKEN}
+	goveralls -coverprofile=coverage.txt -service=travis-ci
 
 build-dev:
 	go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0`" -o ./$(APPNAME) $(SRCPATH)

@@ -1,6 +1,6 @@
 # Sloppose
 
-[![Build Status](https://travis-ci.org/sloppyio/sloppose.svg?branch=master)](https://travis-ci.org/sloppyio/sloppose)
+[![Build Status](https://travis-ci.org/sloppyio/sloppose.svg?branch=master)](https://travis-ci.org/sloppyio/sloppose) [![Coverage Status](https://coveralls.io/repos/github/sloppyio/sloppose/badge.svg?branch=feature%2Fsloppy-yml-test)](https://coveralls.io/github/sloppyio/sloppose?branch=feature%2Fsloppy-yml-test)
 
 Small tool to convert docker-compose files to sloppy.io compatible ones.
 

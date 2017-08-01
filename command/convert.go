@@ -48,7 +48,10 @@ func (c *Convert) Run(args []string) error {
 	}
 
 	linker := &converter.Linker{}
-	linker.Resolve(cf, sf)
+	err = linker.Resolve(cf, sf)
+	if err != nil {
+		return err
+	}
 
 	if output == "" {
 		output = strings.ToLower(sf.Project)

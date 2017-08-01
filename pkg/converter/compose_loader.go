@@ -88,6 +88,7 @@ func (cl *ComposeLoader) ConvertToV2(v3conf *v3types.Config) (*ComposeFile, erro
 
 	for _, service := range v3conf.Services {
 		v2conf := &config.ServiceConfig{
+			Command:     service.Command,
 			DependsOn:   service.DependsOn,
 			DomainName:  service.DomainName,
 			Entrypoint:  service.Entrypoint,
@@ -96,16 +97,21 @@ func (cl *ComposeLoader) ConvertToV2(v3conf *v3types.Config) (*ComposeFile, erro
 			Image:       service.Image,
 			Labels:      service.Labels,
 			Links:       service.Links,
-			Logging: config.Log{
-				Driver:  service.Logging.Driver,
-				Options: service.Logging.Options,
-			},
 			//MemLimit: service.Deploy.Resources.Limits.MemoryBytes, TODO convert to xxxMB
 			Ports:      service.Ports,
 			WorkingDir: service.WorkingDir,
 			Volumes:    toVolumes(service.Volumes),
 		}
+
+		if service.Logging != nil {
+			v2conf.Logging = config.Log{
+				Driver:  service.Logging.Driver,
+				Options: service.Logging.Options,
+			}
+		}
+
 		cf.ServiceConfigs.Add(service.Name, v2conf)
 	}
+
 	return cf, nil
 }
