@@ -15,6 +15,10 @@ const (
 
 var hostPortRegex *regexp.Regexp = regexp.MustCompile(hostPortPattern)
 
+type DependencyError struct {
+	errStr string
+}
+
 type Linker struct {
 	links []*link
 }
@@ -24,6 +28,14 @@ type link struct {
 	fqdn    string
 	ports   []*sloppy.PortMap
 	appName string
+}
+
+func newDependencyError(msg string, args ...string) *DependencyError {
+	return &DependencyError{fmt.Sprintf(msg, args)}
+}
+
+func (d *DependencyError) Error() string {
+	return d.errStr
 }
 
 func (l *Linker) GetByApp(name string) *link {
@@ -36,38 +48,12 @@ func (l *Linker) GetByApp(name string) *link {
 }
 
 func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
-	// build possible links
-	for serviceName, apps := range sf.Services {
-		for appName, app := range apps {
-			l.links = append(
-				l.links, &link{
-					app:     app,
-					fqdn:    fmt.Sprintf(fqdnTemplate, appName, serviceName, sf.Project),
-					ports:   app.PortMappings,
-					appName: appName,
-				},
-			)
-		}
-	}
-
-	appendDependency := func(app *SloppyApp, fqdn string) {
-		s := l.formatDependency(fqdn)
-		if len(app.App.Dependencies) > 0 {
-			for _, dep := range app.App.Dependencies {
-				if s == dep {
-					return
-				}
-			}
-		}
-		app.App.Dependencies = append(
-			app.App.Dependencies,
-			s,
-		)
-	}
+	l.buildLinks(sf)
 
 	// resolve possible connections
 	for _, link := range l.links {
 		for key, val := range link.app.App.EnvVars {
+			app := link.app.App
 			if strings.Contains(key, "HOST") ||
 				strings.Index(val, ":") != -1 {
 				matches := hostPortRegex.FindStringSubmatch(val)
@@ -83,12 +69,12 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 				}
 
 				targetVar := strings.Replace(
-					link.app.App.EnvVars[key],
+					app.EnvVars[key],
 					match,
 					targetLink.fqdn,
 					1,
 				)
-				link.app.App.EnvVars[key] = targetVar
+				app.EnvVars[key] = targetVar
 
 				// also consider special sloppy Env field
 				for i, s := range link.app.Env {
@@ -98,7 +84,7 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 					}
 				}
 
-				appendDependency(link.app, targetLink.fqdn)
+				app.Dependencies = l.appendDependency(link.app, targetLink.fqdn)
 			}
 
 			// also considering DependsOn and Links from compose
@@ -109,18 +95,20 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 				if len(conf.DependsOn) > 0 {
 					for _, dep := range conf.DependsOn {
 						t := l.GetByApp(dep)
-						if t != nil {
-							appendDependency(link.app, t.fqdn)
+						if t == nil {
+							return newDependencyError(`Couldn't find related service %q declared in "depends_on"`, dep)
 						}
+						app.Dependencies = l.appendDependency(link.app, t.fqdn)
 					}
 				}
 
 				if len(conf.Links) > 0 {
 					for _, val := range conf.Links {
 						t := l.GetByApp(val)
-						if t != nil {
-							appendDependency(link.app, t.fqdn)
+						if t == nil {
+							return newDependencyError(`Couldn't find related service %q declared in "links"`, val)
 						}
+						app.Dependencies = l.appendDependency(link.app, t.fqdn)
 					}
 				}
 			}
@@ -128,6 +116,36 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 	}
 
 	return nil
+}
+
+func (l *Linker) appendDependency(app *SloppyApp, fqdn string) []string {
+	s := l.formatDependency(fqdn)
+	if len(app.App.Dependencies) > 0 {
+		for _, dep := range app.App.Dependencies {
+			if s == dep {
+				return app.App.Dependencies
+			}
+		}
+	}
+	return append(
+		app.App.Dependencies,
+		s,
+	)
+}
+
+func (l *Linker) buildLinks(sf *SloppyFile) {
+	for serviceName, apps := range sf.Services {
+		for appName, app := range apps {
+			l.links = append(
+				l.links, &link{
+					app:     app,
+					fqdn:    fmt.Sprintf(fqdnTemplate, appName, serviceName, sf.Project),
+					ports:   app.PortMappings,
+					appName: appName,
+				},
+			)
+		}
+	}
 }
 
 func (l *Linker) formatDependency(in string) (out string) {

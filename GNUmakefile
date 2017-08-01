@@ -18,6 +18,15 @@ endef
 test:
 	go test -v -race ./pkg/...
 
+coverage:
+	go test -timeout 30s -covermode=count -coverprofile=coverage.txt ./pkg/...
+
+coverage-show:
+	go tool cover -html=coverage.txt
+
+coverage-stats:
+	go tool cover -func=coverage.txt
+
 build-dev:
 	go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0`" -o ./$(APPNAME) $(SRCPATH)
 

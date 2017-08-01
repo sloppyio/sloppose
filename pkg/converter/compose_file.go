@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	defaultVersion        = "2"
 	defaultProjectName    = "sloppyio"
 	envComposeProjectName = "COMPOSE_PROJECT_NAME"
 )
@@ -28,7 +27,10 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 		return nil, fmt.Errorf("At least one readed file is required")
 	}
 
-	composeVersion := cf.parseVersion(buf[0])
+	composeVersion, err := cf.parseVersion(buf[0])
+	if err != nil {
+		return nil, err
+	}
 	if len(buf) > 1 {
 		err = cf.validateVersions(buf)
 		if err != nil {
@@ -42,6 +44,9 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 		cf, err = loader.LoadVersion3(buf)
 	default:
 		cf, err = loader.LoadVersion2(buf)
+	}
+	if err != nil {
+		return
 	}
 
 	if projectName != "" {
@@ -59,19 +64,29 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 	return
 }
 
-func (cf *ComposeFile) parseVersion(bytes []byte) string {
+func (cf *ComposeFile) parseVersion(bytes []byte) (string, error) {
 	var version composeVersion
-	yaml.Unmarshal(bytes, &version)
-	if version.Version == "" {
-		return defaultVersion
+	err := yaml.Unmarshal(bytes, &version)
+	if err != nil {
+		return "", err
 	}
-	return version.Version
+	if version.Version == "" {
+		return "", fmt.Errorf("missing version declaration in compose file")
+	}
+	return version.Version, nil
 }
 
 func (cf *ComposeFile) validateVersions(in [][]byte) error {
-	version := cf.parseVersion(in[0])
+	version, err := cf.parseVersion(in[0])
+	if err != nil {
+		return err
+	}
 	for _, bytes := range in[1:] {
-		if version != cf.parseVersion(bytes) {
+		parsed, err := cf.parseVersion(bytes)
+		if err != nil {
+			return err
+		}
+		if version != parsed {
 			return fmt.Errorf("docker-compose version mismatch, want version: %s", version)
 		}
 	}

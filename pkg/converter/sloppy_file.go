@@ -13,7 +13,7 @@ const (
 	// defaults
 	DomainUri      = "$URI"
 	InstanceCount  = 1
-	InstanceMemory = 512
+	InstanceMemory = 256
 	VolumeSize     = "8GB"
 )
 
