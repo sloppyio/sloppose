@@ -1,5 +1,5 @@
 # Sloppose
----
+
 [![Build Status](https://travis-ci.org/sloppyio/sloppose.svg?branch=master)](https://travis-ci.org/sloppyio/sloppose)
 
 Small tool to convert docker-compose files to sloppy.io compatible ones.
