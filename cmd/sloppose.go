@@ -10,7 +10,9 @@ import (
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		fatal(fmt.Errorf("Please specify a command..."))
+		fmt.Println("Please specify a command...")
+		usage()
+		os.Exit(1)
 	}
 
 	if args[0] == "-v" || args[0] == "--version" {
@@ -29,9 +31,7 @@ func main() {
 			fmt.Println(cmd.Help())
 		}
 	} else {
-		// TODO print possible commands
-		fmt.Println("Please specify a command...")
-		fmt.Printf(usageTemplate, "TODO")
+		usage()
 	}
 
 }
@@ -41,6 +41,15 @@ func fatal(err error) {
 	os.Exit(1)
 }
 
-const usageTemplate = `Command usage:
-	%s
+func usage() {
+	var cmdStr string
+	for cmd, cmdFn := range command.Commands {
+		c, _ := cmdFn()
+		cmdStr += fmt.Sprintf("  %s\t\t%s\n", cmd, c.Synopsis())
+	}
+	fmt.Printf(usageTemplate, cmdStr)
+}
+
+const usageTemplate = `Available commands:
+%s
 `

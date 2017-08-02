@@ -11,13 +11,20 @@ type Convert struct{}
 
 func (c *Convert) Help() string {
 	text := `
-	Usage: sloppose convert [options] [files]
+Usage: sloppose convert [options] [files]
 
-	Defaults to docker-compose.yml if no files are given.
+Options:
+  -o              output path, defaults to working directory
+  -projectname    sets the projectname, defaults to working directory
 
-	Converts a docker-compose.yml to sloppyio.yml file.
-	`
+Defaults to docker-compose.yml if no files are given.
+Converts a docker-compose.yml to a sloppy.io compatible yml format.
+`
 	return strings.TrimSpace(text)
+}
+
+func (c *Convert) Synopsis() string {
+	return "Converts a docker-compose.yml to a sloppy.io compatible yml format."
 }
 
 func (c *Convert) Run(args []string) error {
