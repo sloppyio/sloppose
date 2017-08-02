@@ -32,10 +32,10 @@
   version = "v0.3.1"
 
 [[projects]]
+  branch = "master"
   name = "github.com/docker/libcompose"
   packages = ["config","logger","lookup","project","project/events","project/options","utils","yaml"]
-  revision = "7c59e343cd9d1f3f5577b5bfb71f6486beb4c006"
-  version = "v0.4.0"
+  revision = "1b708aac26a4fc6f9bff31728a8e3a252ef57dbd"
 
 [[projects]]
   branch = "master"
@@ -53,7 +53,7 @@
   branch = "master"
   name = "github.com/google/go-cmp"
   packages = ["cmp","cmp/internal/diff","cmp/internal/value"]
-  revision = "a4dcf7614330c5e788565a982c299491a8d8a550"
+  revision = "a9cc2ea1d957ce7e952bfdc3efe805184ce85972"
 
 [[projects]]
   name = "github.com/mattn/go-shellwords"
@@ -113,7 +113,7 @@
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
-  revision = "14ac33bf8474b62c65cae263af2e4d3b543cc699"
+  revision = "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a"
 
 [[projects]]
   branch = "v2"
@@ -124,6 +124,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "14da699334cded77924e75b9cc54ce6ec534986d1f68381b14edf0d4363bf915"
+  inputs-digest = "8503ee3b47cdafdc16b7e0f1cf00a707df88ee8047ffe1cb396530ea2d6b0f3b"
   solver-name = "gps-cdcl"
   solver-version = 1

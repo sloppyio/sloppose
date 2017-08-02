@@ -38,8 +38,10 @@ services:
        window: 120s
      placement:
        constraints: [node=foo]
+   volumes:
+     - content:/var/www/html
   db:
-   image: mysql:8.0.0"
+   image: mysql:8.0.0
    command: mysqld
    volumes:
      - db_data:/var/lib/mysql
@@ -55,3 +57,4 @@ services:
 #       syslog-address: "tcp://192.168.0.42:123"
 volumes:
     db:
+    content:

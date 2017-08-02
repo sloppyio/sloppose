@@ -27,7 +27,7 @@ services:
       - MYSQL_PASSWORD=wordpress
       - MYSQL_ROOT_PASSWORD=somewordpress
       - MYSQL_USER=wordpress
-      image: mysql:8.0.0"
+      image: mysql:8.0.0
       volumes:
       - container_path: /var/lib/mysql
     wordpress:
@@ -40,6 +40,8 @@ services:
       - WORDPRESS_DB_USER=wordpress
       image: wordpress:4.7.4
       port: 80
+      volumes:
+      - container_path: /var/www/html
 version: v1
 `
 

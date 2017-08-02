@@ -138,6 +138,28 @@ func TestMemSwappiness(t *testing.T) {
 	assert.Equal(t, int64(10), *hostCfg.MemorySwappiness)
 }
 
+func TestMemReservation(t *testing.T) {
+	ctx := &ctx.Context{}
+	sc := &config.ServiceConfig{
+		MemReservation: 100000,
+	}
+	_, hostCfg, err := Convert(sc, ctx.Context, nil)
+	assert.Nil(t, err)
+
+	assert.Equal(t, int64(100000), hostCfg.MemoryReservation)
+}
+
+func TestOomKillDisable(t *testing.T) {
+	ctx := &ctx.Context{}
+	sc := &config.ServiceConfig{
+		OomKillDisable: true,
+	}
+	_, hostCfg, err := Convert(sc, ctx.Context, nil)
+	assert.Nil(t, err)
+
+	assert.Equal(t, true, *hostCfg.OomKillDisable)
+}
+
 func TestOomScoreAdj(t *testing.T) {
 	ctx := &ctx.Context{}
 	sc := &config.ServiceConfig{
@@ -147,6 +169,17 @@ func TestOomScoreAdj(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, 500, hostCfg.OomScoreAdj)
+}
+
+func TestStopGracePeriod(t *testing.T) {
+	ctx := &ctx.Context{}
+	sc := &config.ServiceConfig{
+		StopGracePeriod: "5s",
+	}
+	cfg, _, err := Convert(sc, ctx.Context, nil)
+	assert.Nil(t, err)
+
+	assert.Equal(t, 5, *cfg.StopTimeout)
 }
 
 func TestStopSignal(t *testing.T) {
