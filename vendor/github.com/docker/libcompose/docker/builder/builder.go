@@ -8,11 +8,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/net/context"
-
 	"github.com/Sirupsen/logrus"
+	"github.com/docker/cli/cli/command/image/build"
 	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/builder"
 	"github.com/docker/docker/builder/dockerignore"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/archive"
@@ -22,6 +20,7 @@ import (
 	"github.com/docker/docker/pkg/streamformatter"
 	"github.com/docker/docker/pkg/term"
 	"github.com/docker/libcompose/logger"
+	"golang.org/x/net/context"
 )
 
 // DefaultDockerfileName is the default name of a Dockerfile
@@ -42,7 +41,7 @@ type DaemonBuilder struct {
 	NoCache          bool
 	ForceRemove      bool
 	Pull             bool
-	BuildArgs        map[string]string
+	BuildArgs        map[string]*string
 	LoggerFactory    logger.Factory
 }
 
@@ -76,7 +75,7 @@ func (d *DaemonBuilder) Build(ctx context.Context, imageName string) error {
 	}
 
 	// Setup an upload progress bar
-	progressOutput := streamformatter.NewStreamFormatter().NewProgressOutput(progBuff, true)
+	progressOutput := streamformatter.NewProgressOutput(progBuff)
 
 	var body io.Reader = progress.NewProgressReader(buildCtx, progressOutput, 0, "", "Sending build context to Docker daemon")
 
@@ -194,8 +193,8 @@ func CreateTar(contextDirectory, dockerfile string) (io.ReadCloser, error) {
 		includes = append(includes, ".dockerignore", dockerfileName)
 	}
 
-	if err := builder.ValidateContextDirectory(contextDirectory, excludes); err != nil {
-		return nil, fmt.Errorf("Error checking context is accessible: '%s'. Please check permissions and try again.", err)
+	if err := build.ValidateContextDirectory(contextDirectory, excludes); err != nil {
+		return nil, fmt.Errorf("error checking context is accessible: '%s', please check permissions and try again", err)
 	}
 
 	options := &archive.TarOptions{

@@ -1,4 +1,4 @@
-version: "2"
+version: "3"
 
 services:
   busy_env:
@@ -7,6 +7,8 @@ services:
     command: ["sleep", "20"]
     depends_on:
       - wordpress
+    links:
+      - db
   wordpress:
    domainname: mywords.sloppy.zone
    image: wordpress:4.7.4
@@ -17,6 +19,25 @@ services:
      WORDPRESS_DB_HOST: db:3306
      WORDPRESS_DB_USER: wordpress
      WORDPRESS_DB_PASSWORD: wordpress
+   entrypoint: ["/code/entrypoint.sh", "-foo", "bar"]
+   deploy:
+     mode: replicated
+     replicas: 3
+     labels: [FOO=BAR]
+     resources:
+       limits:
+         cpus: '0.001'
+         memory: 128M
+       reservations:
+         cpus: '0.0001'
+         memory: 64M
+     restart_policy:
+       condition: on_failure
+       delay: 5s
+       max_attempts: 3
+       window: 120s
+     placement:
+       constraints: [node=foo]
    volumes:
      - content:/var/www/html
   db:

@@ -86,6 +86,7 @@ var schemaDataV1 = `{
         "log_opt": {"type": "object"},
         "mac_address": {"type": "string"},
         "mem_limit": {"type": ["number", "string"]},
+        "mem_reservation": {"type": ["number", "string"]},
         "memswap_limit": {"type": ["number", "string"]},
         "mem_swappiness": {"type": "integer"},
         "net": {"type": "string"},
@@ -280,6 +281,7 @@ var servicesSchemaDataV2 = `{
 
         "external_links": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "extra_hosts": {"$ref": "#/definitions/list_or_dict"},
+        "group_add": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "hostname": {"type": "string"},
         "image": {"type": "string"},
         "ipc": {"type": "string"},
@@ -298,6 +300,7 @@ var servicesSchemaDataV2 = `{
 
         "mac_address": {"type": "string"},
         "mem_limit": {"type": ["number", "string"]},
+        "mem_reservation": {"type": ["number", "string"]},
         "memswap_limit": {"type": ["number", "string"]},
         "mem_swappiness": {"type": "integer"},
         "network_mode": {"type": "string"},
@@ -345,6 +348,7 @@ var servicesSchemaDataV2 = `{
         "security_opt": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
         "shm_size": {"type": ["number", "string"]},
         "stdin_open": {"type": "boolean"},
+        "stop_grace_period": {"type": "string"},
         "stop_signal": {"type": "string"},
         "tmpfs": {"$ref": "#/definitions/string_or_list"},
         "tty": {"type": "boolean"},

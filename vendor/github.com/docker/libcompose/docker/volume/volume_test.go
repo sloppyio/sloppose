@@ -3,9 +3,9 @@ package volume
 import (
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/volume"
+	"github.com/docker/docker/client"
 	"github.com/docker/libcompose/config"
-	"github.com/docker/libcompose/test"
 )
 
 func TestVolumesFromServices(t *testing.T) {
@@ -20,6 +20,19 @@ func TestVolumesFromServices(t *testing.T) {
 		{
 			volumeConfigs: map[string]*config.VolumeConfig{
 				"vol1": {},
+			},
+			services: map[string]*config.ServiceConfig{},
+			expectedVolumes: []*Volume{
+				{
+					name:        "vol1",
+					projectName: "prj",
+				},
+			},
+			expectedError: false,
+		},
+		{
+			volumeConfigs: map[string]*config.VolumeConfig{
+				"vol1": nil,
 			},
 			services: map[string]*config.ServiceConfig{},
 			expectedVolumes: []*Volume{
@@ -74,9 +87,9 @@ func testExpectedContainsVolume(t *testing.T, index int, expected []*Volume, vol
 }
 
 type volumeClient struct {
-	test.NopClient
+	client.Client
 	expectedName         string
-	expectedVolumeCreate types.VolumeCreateRequest
+	expectedVolumeCreate volume.VolumesCreateBody
 	inspectError         error
 	inspectVolumeDriver  string
 	inspectVolumeOptions map[string]string

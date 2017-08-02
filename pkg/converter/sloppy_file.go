@@ -2,19 +2,12 @@ package converter
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 
 	compose "github.com/docker/libcompose/yaml"
 	sloppy "github.com/sloppyio/cli/src/api"
-)
-
-const (
-	// defaults
-	DomainUri      = "$URI"
-	InstanceCount  = 1
-	InstanceMemory = 256
-	VolumeSize     = "8GB"
 )
 
 type SloppyApps map[string]*SloppyApp
@@ -23,11 +16,11 @@ type SloppyApps map[string]*SloppyApp
 // the yml and json format representation for the sloppy.App struct.
 type SloppyApp struct {
 	*sloppy.App
-	Domain string                  `json:"domain,omitempty"`
+	Domain *string                 `json:"domain,omitempty"`
 	Env    compose.MaporEqualSlice `json:"env,omitempty"`
 	Port   *int                    `json:"port,omitempty"`
 
-	// hide conflicting fields from sloppy.App
+	// hide conflicting fields from sloppy.App during serialization
 	EnvVars      map[string]string `json:"-"`
 	PortMappings []*sloppy.PortMap `json:"-"`
 }
@@ -47,49 +40,68 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 	}
 
 	for service, config := range cf.ServiceConfigs.All() {
-		m, i, uri := InstanceMemory, InstanceCount, DomainUri
+		var uri *string
 		if config.DomainName != "" {
-			uri = config.DomainName
-		}
-		app := &SloppyApp{
-			App: &sloppy.App{
-				Domain:    &sloppy.Domain{URI: &uri},
-				Image:     &config.Image,
-				Instances: &i,
-				Memory:    &m,
-				Volumes:   sf.convertVolumes(config.Volumes),
-			},
-			Domain: uri,
+			uri = &config.DomainName
 		}
 
-		// assign command
+		app := &SloppyApp{
+			App: &sloppy.App{
+				Image:   &config.Image,
+				Volumes: sf.convertVolumes(config.Volumes),
+			},
+		}
+
+		// Assign possible empty values in extra steps to hide empty object from output
+		// Commands
 		if len(config.Command) > 0 {
 			app.Command = sf.convertCommand(config.Command)
 		}
 
+		// Domain
+		if uri != nil {
+			app.App.Domain = &sloppy.Domain{URI: uri}
+			app.Domain = uri
+		}
+
+		// Environment
 		if len(config.Environment) > 0 {
 			app.App.EnvVars = config.Environment.ToMap()
 			app.Env = config.Environment
 		}
 
-		// assign ports
+		// Logging
+		if config.Logging.Driver != "" && len(config.Logging.Options) > 0 {
+			app.Logging = &sloppy.Logging{
+				Driver:  &config.Logging.Driver,
+				Options: config.Logging.Options,
+			}
+		}
+
+		// Port
 		if len(config.Ports) > 0 {
 			portMappings, err := sf.convertPorts(config.Ports)
 			if err != nil {
 				return nil, err
 			}
-			app.App.PortMappings = portMappings
 
 			// In yml format just one port is supported, use the first one.
+			// And don't set app.App.PortMappings.
 			app.Port = portMappings[0].Port
 		}
 
 		// TODO implement service to compose-file mapping
+		// Possible option to map multiple compose-files to own sloppy services
+		// instead of the current default "apps"
+
 		// sloppy naming:
 		//  []   = service
 		//  [][] = app
 		sf.Services["apps"][service] = app
 	}
+
+	sf.sortFields()
+
 	return sf, nil
 }
 
@@ -126,15 +138,25 @@ func (sf *SloppyFile) convertPorts(ports []string) (pm []*sloppy.PortMap, err er
 }
 
 func (sf *SloppyFile) convertVolumes(volumes *compose.Volumes) (v []*sloppy.Volume) {
-	defaultSize := VolumeSize
 	if volumes == nil {
 		return
 	}
 	for _, volume := range volumes.Volumes {
 		v = append(v, &sloppy.Volume{
 			Path: &volume.Destination,
-			Size: &defaultSize,
 		})
 	}
 	return
+}
+
+// Sorting the converted string slices ensures that
+// the serialized output is always the same.
+func (sf *SloppyFile) sortFields() {
+	// ensure that the output is always the same
+	for _, services := range sf.Services {
+		for _, app := range services {
+			sort.Strings(app.Env)
+			sort.Strings(app.Dependencies)
+		}
+	}
 }

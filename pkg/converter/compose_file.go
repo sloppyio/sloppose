@@ -3,14 +3,15 @@ package converter
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/docker/libcompose/config"
 	"github.com/ghodss/yaml"
 )
 
 const (
-	defaultProjectName    = "sloppyio"
-	envComposeProjectName = "COMPOSE_PROJECT_NAME"
+	DefaultProjectName    = "sloppyio"
+	EnvComposeProjectName = "COMPOSE_PROJECT_NAME"
 )
 
 type ComposeFile struct {
@@ -42,8 +43,10 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 	switch composeVersion {
 	case "3":
 		cf, err = loader.LoadVersion3(buf)
-	default:
+	case "2":
 		cf, err = loader.LoadVersion2(buf)
+	default:
+		err = fmt.Errorf("missing version declaration in compose file")
 	}
 	if err != nil {
 		return
@@ -53,14 +56,31 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 		cf.ProjectName = projectName
 	} else {
 		if cf.ProjectName == "" {
-			if env, ok := os.LookupEnv(envComposeProjectName); ok {
+			if env, ok := os.LookupEnv(EnvComposeProjectName); ok {
 				cf.ProjectName = env
 			} else {
-				cf.ProjectName = defaultProjectName
+				cf.ProjectName, err = cf.newProjectName()
+				if err != nil {
+					return
+				}
 			}
 		}
 	}
+	return
+}
 
+// Returns the current working directory name.
+func (cf *ComposeFile) newProjectName() (p string, err error) {
+	wd, err := os.Getwd()
+	if err != nil {
+		return p, err
+	}
+	p, err = filepath.Abs(wd)
+	p = filepath.Base(p)
+
+	if p == "." {
+		p = DefaultProjectName
+	}
 	return
 }
 
@@ -69,9 +89,6 @@ func (cf *ComposeFile) parseVersion(bytes []byte) (string, error) {
 	err := yaml.Unmarshal(bytes, &version)
 	if err != nil {
 		return "", err
-	}
-	if version.Version == "" {
-		return "", fmt.Errorf("missing version declaration in compose file")
 	}
 	return version.Version, nil
 }

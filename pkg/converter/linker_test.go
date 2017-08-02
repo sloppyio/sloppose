@@ -9,76 +9,70 @@ import (
 	"github.com/sloppyio/sloppose/pkg/converter"
 )
 
-var cfA *converter.ComposeFile
-var sfA *converter.SloppyFile
-
-const testProjectName = "linker_test"
-
-func init() {
-	reader := &converter.ComposeReader{}
-	buf, err := reader.Read("/testdata/fixture_linker_a.yml")
-	if err != nil {
-		panic(err)
+func TestLinker_FindService(t *testing.T) {
+	cases := map[string]struct {
+		value       string
+		shouldMatch bool
+	}{
+		"FOO":      {"bar", false},
+		"BAR":      {"foo:80", true},
+		"SHORT":    {"s:80", true},
+		"FOO_BAR":  {"another.foo:443", true},
+		"FOO_HOST": {"bar", true},
 	}
-	loader := &converter.ComposeLoader{}
-	cfA, err = loader.LoadVersion2([][]byte{buf})
-	cfA.ProjectName = testProjectName
-	if err != nil {
-		panic(err)
-	}
-	sfA, err = converter.NewSloppyFile(cfA)
-	if err != nil {
-		panic(err)
+
+	l := converter.Linker{}
+
+	for envKey, caseVal := range cases {
+		matches := l.FindServiceString(envKey, caseVal.value)
+		if caseVal.shouldMatch && matches == nil {
+			t.Errorf("Expected an match for %q, got nothing.", caseVal.value)
+		} else if matches != nil && !caseVal.shouldMatch {
+			t.Errorf("Expected no match for %q, got: %v", caseVal.value, matches)
+		}
 	}
 }
 
 func TestLinker_Resolve(t *testing.T) {
 	linker := &converter.Linker{}
+	name := "sloppy-test"
 
 	expected := &converter.SloppyFile{
 		Version: "v1",
-		Project: testProjectName,
+		Project: name,
 		Services: map[string]converter.SloppyApps{
 			"apps": {
 				"a": &converter.SloppyApp{
 					App: &sloppy.App{
 						Dependencies: []string{"../apps/b"},
-						Domain:       &sloppy.Domain{URI: ToStrPtr(converter.DomainUri)},
 						EnvVars: map[string]string{
-							"API_URL":  fmt.Sprintf("b.apps.%s:8080", testProjectName),
 							"API_AUTH": "some-external.service:80",
+							"API_URL":  fmt.Sprintf("b.apps.%s:8080", name),
 						},
-						Image:     ToStrPtr("hugo"),
-						Instances: ToIntPtr(converter.InstanceCount),
-						Memory:    ToIntPtr(converter.InstanceMemory),
+						Image: ToStrPtr("hugo"),
 					},
-					Domain: converter.DomainUri,
 					Env: []string{
-						fmt.Sprintf("API_URL=b.apps.%s:8080", testProjectName),
 						"API_AUTH=some-external.service:80",
+						fmt.Sprintf("API_URL=b.apps.%s:8080", name),
 					},
 				},
 				"b": &converter.SloppyApp{
 					App: &sloppy.App{
-						Domain:       &sloppy.Domain{URI: ToStrPtr(converter.DomainUri)},
-						Image:        ToStrPtr("golang"),
-						Instances:    ToIntPtr(converter.InstanceCount),
-						Memory:       ToIntPtr(converter.InstanceMemory),
-						PortMappings: []*sloppy.PortMap{{ToIntPtr(8080)}},
+						Image: ToStrPtr("golang"),
 					},
-					Domain: converter.DomainUri,
-					Port:   ToIntPtr(8080),
+					Port: ToIntPtr(8080),
 				},
 			},
 		},
 	}
 
-	err := linker.Resolve(cfA, sfA)
+	cf, sf := loadSloppyFile("/testdata/fixture_linker_a.yml")
+	err := linker.Resolve(cf, sf)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(sfA, expected); diff != "" {
+	if diff := cmp.Diff(sf, expected); diff != "" {
 		t.Errorf("Result differs: (-got +want)\n%s", diff)
 	}
 
