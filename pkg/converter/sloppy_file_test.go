@@ -28,6 +28,10 @@ services:
       - MYSQL_ROOT_PASSWORD=somewordpress
       - MYSQL_USER=wordpress
       image: mysql:8.0.0
+      logging:
+        driver: syslog
+        options:
+          syslog-address: tcp://192.168.0.42:123
       volumes:
       - container_path: /var/lib/mysql
     wordpress:

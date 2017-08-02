@@ -70,6 +70,14 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 			app.Env = config.Environment
 		}
 
+		// Logging
+		if config.Logging.Driver != "" && len(config.Logging.Options) > 0 {
+			app.Logging = &sloppy.Logging{
+				Driver:  &config.Logging.Driver,
+				Options: config.Logging.Options,
+			}
+		}
+
 		// Port
 		if len(config.Ports) > 0 {
 			portMappings, err := sf.convertPorts(config.Ports)
