@@ -1,6 +1,8 @@
 package converter_test
 
 import (
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/sloppyio/sloppose/pkg/converter"
@@ -65,6 +67,26 @@ func TestNewComposeNilBytes(t *testing.T) {
 	cf, err := converter.NewComposeFile(nil, "")
 	if cf != nil && err == nil {
 		t.Errorf("Expected an error due to zero bytes given.")
+	}
+}
+
+func TestNewComposeFileProjectName(t *testing.T) {
+	reader := &converter.ComposeReader{}
+	b, err := reader.Read("/testdata/docker-compose-v2.yml")
+	if err != nil {
+		t.Error(err)
+	}
+
+	projectName := "myVeryCustomFooName"
+	os.Setenv(converter.EnvComposeProjectName, projectName)
+	defer os.Unsetenv(converter.EnvComposeProjectName)
+
+	cf, err := converter.NewComposeFile([][]byte{b}, "")
+	if err != nil {
+		t.Error(err)
+	}
+	if cf.ProjectName != strings.ToLower(projectName) {
+		t.Errorf("Expected %q as project name, got: %q", projectName, cf.ProjectName)
 	}
 }
 

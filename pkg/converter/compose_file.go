@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	defaultProjectName    = "sloppyio"
-	envComposeProjectName = "COMPOSE_PROJECT_NAME"
+	DefaultProjectName    = "sloppyio"
+	EnvComposeProjectName = "COMPOSE_PROJECT_NAME"
 )
 
 type ComposeFile struct {
@@ -56,7 +56,7 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 		cf.ProjectName = projectName
 	} else {
 		if cf.ProjectName == "" {
-			if env, ok := os.LookupEnv(envComposeProjectName); ok {
+			if env, ok := os.LookupEnv(EnvComposeProjectName); ok {
 				cf.ProjectName = env
 			} else {
 				cf.ProjectName, err = cf.newProjectName()
@@ -79,7 +79,7 @@ func (cf *ComposeFile) newProjectName() (p string, err error) {
 	p = filepath.Base(p)
 
 	if p == "." {
-		p = defaultProjectName
+		p = DefaultProjectName
 	}
 	return
 }
