@@ -1,58 +1,21 @@
 package converter_test
 
 import (
+	"fmt"
+	"io/ioutil"
 	"strings"
 	"testing"
 
-	"github.com/ghodss/yaml"
 	"github.com/google/go-cmp/cmp"
+
+	"github.com/sloppyio/sloppose/internal/test"
 	"github.com/sloppyio/sloppose/pkg/converter"
 )
 
-var expectedSloppyYml = `project: sloppy-test
-services:
-  apps:
-    busy_env:
-      cmd: sleep 20
-      dependencies:
-      - ../apps/wordpress
-      env:
-      - VAR_A=1
-      - VAR_B=test
-      image: busybox
-    db:
-      cmd: mysqld
-      env:
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_PASSWORD=wordpress
-      - MYSQL_ROOT_PASSWORD=somewordpress
-      - MYSQL_USER=wordpress
-      image: mysql:8.0.0
-      logging:
-        driver: syslog
-        options:
-          syslog-address: tcp://192.168.0.42:123
-      volumes:
-      - container_path: /var/lib/mysql
-    wordpress:
-      dependencies:
-      - ../apps/db
-      domain: mywords.sloppy.zone
-      env:
-      - WORDPRESS_DB_HOST=db.apps.sloppy-test:3306
-      - WORDPRESS_DB_PASSWORD=wordpress
-      - WORDPRESS_DB_USER=wordpress
-      image: wordpress:4.7.4
-      port: 80
-      volumes:
-      - container_path: /var/www/html
-version: v1
-`
-
 // output should be the same as described above
 var testFiles = []string{
-	"/testdata/docker-compose-v2.yml",
-	"/testdata/docker-compose-v3-simple.yml",
+	"docker-compose-v2.yml",
+	"docker-compose-v3.yml",
 }
 
 func loadSloppyFile(filename string) (cf *converter.ComposeFile, sf *converter.SloppyFile) {
@@ -79,17 +42,29 @@ func loadSloppyFile(filename string) (cf *converter.ComposeFile, sf *converter.S
 }
 
 func TestNewSloppyFile(t *testing.T) {
-	wantLines := strings.Split(expectedSloppyYml, "\n")
-	for _, testFile := range testFiles {
-		_, have := loadSloppyFile(testFile)
-		haveBuf, err := yaml.Marshal(have)
-		if err != nil {
-			t.Error(err)
-		}
+	helper := test.NewHelper(t)
+	expectedSloppyYml := helper.GetTestFile("golden0.yml")
+	defer expectedSloppyYml.Close()
+	b, err := ioutil.ReadAll(expectedSloppyYml)
+	helper.Must(err)
+	wantLines := strings.Split(string(b), "\n")
+
+	for i, testFile := range testFiles {
+		_, have := loadSloppyFile("testdata/" + testFile)
+
+		helper.ChdirTemp()
+		writer := &converter.YAMLWriter{}
+		outFileName := fmt.Sprintf("out-%d.yml", i)
+		err := writer.WriteFile(have, outFileName)
+		helper.Must(err)
+
+		haveBuf, err := ioutil.ReadFile(outFileName)
+		helper.Must(err)
 
 		haveLines := strings.Split(string(haveBuf), "\n")
 		if diff := cmp.Diff(haveLines, wantLines); diff != "" {
 			t.Errorf("Case: %q\nResult differs: (-got +want)\n%s", testFile, diff)
 		}
+		helper.ChdirTest()
 	}
 }

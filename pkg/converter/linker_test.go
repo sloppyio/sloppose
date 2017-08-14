@@ -69,7 +69,7 @@ func TestLinker_Resolve(t *testing.T) {
 	cf, sf := loadSloppyFile("/testdata/fixture_linker_a.yml")
 	err := linker.Resolve(cf, sf)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if diff := cmp.Diff(sf, expected); diff != "" {

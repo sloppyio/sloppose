@@ -28,7 +28,7 @@ func (w *YAMLWriter) WriteFile(i interface{}, path string) error {
 		return err
 	}
 
-	return ioutil.WriteFile(path, bytes, 0644)
+	return ioutil.WriteFile(path, w.humanize(bytes), 0644)
 }
 
 func (w *YAMLWriter) ensureFileEnding(path string) string {
@@ -36,4 +36,13 @@ func (w *YAMLWriter) ensureFileEnding(path string) string {
 		return path
 	}
 	return path + ".yml"
+}
+
+// Ensure a more human readable output
+func (w *YAMLWriter) humanize(in []byte) []byte {
+	// move `version` attribute to top of the file
+	out := in[len(in)-12:]
+	out = append(out, in[:len(in)-12]...)
+
+	return out
 }

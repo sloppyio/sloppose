@@ -152,7 +152,6 @@ func (sf *SloppyFile) convertVolumes(volumes *compose.Volumes) (v []*sloppy.Volu
 // Sorting the converted string slices ensures that
 // the serialized output is always the same.
 func (sf *SloppyFile) sortFields() {
-	// ensure that the output is always the same
 	for _, services := range sf.Services {
 		for _, app := range services {
 			sort.Strings(app.Env)
