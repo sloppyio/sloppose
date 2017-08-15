@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+  a:
+    image: hugo
+    environment:
+    - API_URL=b:8080
+    - API_AUTH=some-external.service:80
+  b:
+    image: golang
+    ports:
+    - 80-90:8080-8090 # Ranges aren't supported

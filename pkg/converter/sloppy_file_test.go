@@ -68,3 +68,24 @@ func TestNewSloppyFile(t *testing.T) {
 		helper.ChdirTest()
 	}
 }
+
+func TestNewSloppyFileInvalidPorts(t *testing.T) {
+	helper := test.NewHelper(t)
+	cases := []string{
+		"fixture_sloppy-file0.yml",
+		"fixture_sloppy-file1.yml",
+	}
+
+	for _, testCase := range cases {
+		file := helper.GetTestFile(testCase)
+		bytes, err := ioutil.ReadAll(file)
+		file.Close()
+		helper.Must(err)
+		cf, err := converter.NewComposeFile([][]byte{bytes}, "")
+		helper.Must(err)
+		_, err = converter.NewSloppyFile(cf)
+		if err == nil {
+			t.Errorf("Expected a port related error, got nothing.")
+		}
+	}
+}

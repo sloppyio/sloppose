@@ -66,7 +66,7 @@ func TestLinker_Resolve(t *testing.T) {
 		},
 	}
 
-	cf, sf := loadSloppyFile("/testdata/fixture_linker_a.yml")
+	cf, sf := loadSloppyFile("/testdata/fixture_linker0.yml")
 	err := linker.Resolve(cf, sf)
 	if err != nil {
 		t.Fatal(err)

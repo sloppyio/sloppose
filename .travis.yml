@@ -26,6 +26,10 @@ deploy:
   - build/linux_386.zip
   - build/linux_amd64.zip
   - build/windows_amd64.zip
+  - build/sloppose_darwin_amd64
+  - build/sloppose_linux_386
+  - build/sloppose_linux_amd64
+  - build/sloppose_windows_amd64.exe
   skip_cleanup: true # prevent file deletion
   on:
     repo: sloppyio/sloppose

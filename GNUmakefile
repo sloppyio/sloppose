@@ -12,7 +12,7 @@ define build
 endef
 
 define zip
-	cd build && zip $(1)_$(2).zip $(APPNAME)_$(1)_$(2)$(3) && rm $(APPNAME)_$(1)_$(2)$(3)
+	cd build && zip $(1)_$(2).zip $(APPNAME)_$(1)_$(2)$(3)
 endef
 
 test:
