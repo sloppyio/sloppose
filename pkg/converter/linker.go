@@ -10,10 +10,12 @@ import (
 
 const (
 	fqdnTemplate    = "%s.%s.%s"                       // app.service.project
-	hostPortPattern = "([a-z]+[a-z0-9._-]*)(:[0-9]+)?" // sloppy appName conform
+	hostPortPattern = `([a-z]+[a-z0-9._-]*)(:[0-9]+)?` // sloppy appName conform
+	schemePattern   = `^(\w+)(:\/\/)+`
 )
 
 var hostPortRegex *regexp.Regexp = regexp.MustCompile(hostPortPattern)
+var schemeRegex *regexp.Regexp = regexp.MustCompile(schemePattern)
 
 type DependencyError struct {
 	errStr string
@@ -54,12 +56,11 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 	for _, link := range l.links {
 		for key, val := range link.app.App.EnvVars {
 			app := link.app.App
-			matches := l.FindServiceString(key, val)
-			if matches == nil {
+			match := l.FindServiceString(key, val)
+			if match == "" {
 				continue
 			}
 
-			match := matches[1]
 			targetLink := l.GetByApp(match)
 
 			if targetLink == nil {
@@ -139,12 +140,21 @@ func (l *Linker) buildLinks(sf *SloppyFile) {
 // Primary match would be a <host:port> one.
 // To also support service linking without a port the
 // environment key name requires to contain the `HOST` string.
-func (l *Linker) FindServiceString(key string, val string) []string {
+func (l *Linker) FindServiceString(key string, val string) string {
 	if strings.Index(val, ":") != -1 ||
 		strings.Contains(key, "HOST") {
-		return hostPortRegex.FindStringSubmatch(val)
+		matches := hostPortRegex.FindAllStringSubmatch(val, -1)
+		for _, subMatch := range matches {
+			schemeMatches := schemeRegex.FindStringSubmatch(val)
+			// skipping schemes as service
+			if schemeMatches != nil && subMatch[1] == schemeMatches[1] {
+				continue
+			}
+
+			return subMatch[1]
+		}
 	}
-	return nil
+	return ""
 }
 
 func (l *Linker) formatDependency(in string) (out string) {

@@ -19,16 +19,18 @@ func TestLinker_FindService(t *testing.T) {
 		"SHORT":    {"s:80", true},
 		"FOO_BAR":  {"another.foo:443", true},
 		"FOO_HOST": {"bar", true},
+		"FOO_URL":  {"mongodb://whatever:4444/db", true},
+		"BAR_URL":  {"foo://nope", true},
 	}
 
 	l := converter.Linker{}
 
 	for envKey, caseVal := range cases {
-		matches := l.FindServiceString(envKey, caseVal.value)
-		if caseVal.shouldMatch && matches == nil {
+		match := l.FindServiceString(envKey, caseVal.value)
+		if caseVal.shouldMatch && match == "" {
 			t.Errorf("Expected an match for %q, got nothing.", caseVal.value)
-		} else if matches != nil && !caseVal.shouldMatch {
-			t.Errorf("Expected no match for %q, got: %v", caseVal.value, matches)
+		} else if match != "" && !caseVal.shouldMatch {
+			t.Errorf("Expected no match for %q, got: %v", caseVal.value, match)
 		}
 	}
 }
