@@ -76,9 +76,9 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 			app.EnvVars[key] = targetVar
 
 			// also consider special sloppy Env field
-			for i, s := range link.app.Env {
-				if s == strings.Join([]string{key, val}, "=") {
-					link.app.Env[i] = strings.Join([]string{key, targetVar}, "=")
+			for i, kv := range link.app.Env {
+				if _, ok := kv[key]; ok {
+					link.app.Env[i][key] = targetVar
 					break
 				}
 			}

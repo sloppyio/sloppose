@@ -51,9 +51,9 @@ func TestLinker_Resolve(t *testing.T) {
 						},
 						Image: ToStrPtr("hugo"),
 					},
-					Env: []string{
-						"API_AUTH=some-external.service:80",
-						fmt.Sprintf("API_URL=b.apps.%s:8080", name),
+					Env: converter.SloppyEnvSlice{
+						{"API_AUTH": "some-external.service:80"},
+						{"API_URL": fmt.Sprintf("b.apps.%s:8080", name)},
 					},
 				},
 				"b": &converter.SloppyApp{

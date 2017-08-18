@@ -1,6 +1,7 @@
 package converter_test
 
 import (
+	"flag"
 	"io/ioutil"
 	"strings"
 	"testing"
@@ -9,6 +10,14 @@ import (
 	"github.com/sloppyio/sloppose/internal/test"
 	"github.com/sloppyio/sloppose/pkg/converter"
 )
+
+var updateFlag = flag.Bool("update", false, "go test -update")
+
+func init() {
+	if !flag.Parsed() {
+		flag.Parse()
+	}
+}
 
 func TestYAMLWriter_WriteFile(t *testing.T) {
 	helper := test.NewHelper(t)
@@ -22,6 +31,12 @@ func TestYAMLWriter_WriteFile(t *testing.T) {
 	helper.Must(err)
 
 	helper.ChdirTest()
+
+	if *updateFlag {
+		err := writer.WriteFile(sf, "testdata/golden0.yml")
+		helper.Must(err)
+		t.Log("Successfully written updated golden file.")
+	}
 
 	goldenBuf, err := ioutil.ReadFile("testdata/golden0.yml")
 	helper.Must(err)

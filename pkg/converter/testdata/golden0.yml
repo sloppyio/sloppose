@@ -7,16 +7,16 @@ services:
       dependencies:
       - ../apps/wordpress
       env:
-      - VAR_A=1
-      - VAR_B=test
+      - VAR_A: "1"
+      - VAR_B: test
       image: busybox
     db:
       cmd: mysqld
       env:
-      - MYSQL_DATABASE=wordpress
-      - MYSQL_PASSWORD=wordpress
-      - MYSQL_ROOT_PASSWORD=somewordpress
-      - MYSQL_USER=wordpress
+      - MYSQL_DATABASE: wordpress
+      - MYSQL_PASSWORD: wordpress
+      - MYSQL_ROOT_PASSWORD: somewordpress
+      - MYSQL_USER: wordpress
       image: mysql:8.0.0
       logging:
         driver: syslog
@@ -29,9 +29,9 @@ services:
       - ../apps/db
       domain: mywords.sloppy.zone
       env:
-      - WORDPRESS_DB_HOST=db.apps.sloppy-test:3306
-      - WORDPRESS_DB_PASSWORD=wordpress
-      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_HOST: db.apps.sloppy-test:3306
+      - WORDPRESS_DB_PASSWORD: wordpress
+      - WORDPRESS_DB_USER: wordpress
       image: wordpress:4.7.4
       port: 80
       volumes:

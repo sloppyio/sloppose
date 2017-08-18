@@ -12,13 +12,15 @@ import (
 
 type SloppyApps map[string]*SloppyApp
 
+type SloppyEnvSlice []map[string]string
+
 // Special intermediate type to fix the inconsistencies between
 // the yml and json format representation for the sloppy.App struct.
 type SloppyApp struct {
 	*sloppy.App
-	Domain *string                 `json:"domain,omitempty"`
-	Env    compose.MaporEqualSlice `json:"env,omitempty"`
-	Port   *int                    `json:"port,omitempty"`
+	Domain *string        `json:"domain,omitempty"`
+	Env    SloppyEnvSlice `json:"env,omitempty"`
+	Port   *int           `json:"port,omitempty"`
 
 	// hide conflicting fields from sloppy.App during serialization
 	EnvVars      map[string]string `json:"-"`
@@ -30,6 +32,17 @@ type SloppyFile struct {
 	Project  string                `json:"project,omitempty"`
 	Services map[string]SloppyApps `json:"services,omitempty"`
 }
+
+func (p SloppyEnvSlice) Len() int { return len(p) }
+func (p SloppyEnvSlice) Less(i, j int) bool {
+	for k := range p[i] {
+		for ok := range p[j] {
+			return k < ok
+		}
+	}
+	return false
+}
+func (p SloppyEnvSlice) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 
 // Map docker-compose.yml to sloppy yml and return representation
 func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
@@ -55,7 +68,7 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 		// Assign possible empty values in extra steps to hide empty object from output
 		// Commands
 		if len(config.Command) > 0 {
-			app.Command = sf.convertCommand(config.Command)
+			app.App.Command = sf.convertCommand(config.Command)
 		}
 
 		// Domain
@@ -67,12 +80,14 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 		// Environment
 		if len(config.Environment) > 0 {
 			app.App.EnvVars = config.Environment.ToMap()
-			app.Env = config.Environment
+			for k, v := range app.App.EnvVars {
+				app.Env = append(app.Env, map[string]string{k: v})
+			}
 		}
 
 		// Logging
 		if config.Logging.Driver != "" && len(config.Logging.Options) > 0 {
-			app.Logging = &sloppy.Logging{
+			app.App.Logging = &sloppy.Logging{
 				Driver:  &config.Logging.Driver,
 				Options: config.Logging.Options,
 			}
@@ -154,8 +169,8 @@ func (sf *SloppyFile) convertVolumes(volumes *compose.Volumes) (v []*sloppy.Volu
 func (sf *SloppyFile) sortFields() {
 	for _, services := range sf.Services {
 		for _, app := range services {
-			sort.Strings(app.Env)
-			sort.Strings(app.Dependencies)
+			sort.Sort(app.Env)
+			sort.Strings(app.App.Dependencies)
 		}
 	}
 }
