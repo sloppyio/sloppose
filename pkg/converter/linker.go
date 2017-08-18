@@ -68,12 +68,24 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 				continue
 			}
 
-			targetVar := strings.Replace(
-				app.EnvVars[key],
-				match,
-				targetLink.fqdn,
-				1,
-			)
+			var targetVar string
+			schemeIdx := strings.Index(app.EnvVars[key], "://")
+			if schemeIdx != -1 {
+				targetVar = app.EnvVars[key][:schemeIdx] + strings.Replace(
+					app.EnvVars[key][schemeIdx:],
+					match,
+					targetLink.fqdn,
+					1,
+				)
+			} else {
+				targetVar = strings.Replace(
+					app.EnvVars[key],
+					match,
+					targetLink.fqdn,
+					1,
+				)
+			}
+
 			app.EnvVars[key] = targetVar
 
 			// also consider special sloppy Env field

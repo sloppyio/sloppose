@@ -12,25 +12,24 @@ import (
 func TestLinker_FindService(t *testing.T) {
 	cases := map[string]struct {
 		value       string
+		expected    string
 		shouldMatch bool
 	}{
-		"FOO":      {"bar", false},
-		"BAR":      {"foo:80", true},
-		"SHORT":    {"s:80", true},
-		"FOO_BAR":  {"another.foo:443", true},
-		"FOO_HOST": {"bar", true},
-		"FOO_URL":  {"mongodb://whatever:4444/db", true},
-		"BAR_URL":  {"foo://nope", true},
+		"FOO":      {"bar", "", false},
+		"BAR":      {"foo:80", "foo", true},
+		"SHORT":    {"s:80", "s", true},
+		"FOO_BAR":  {"another.foo:443", "another.foo", true},
+		"FOO_HOST": {"bar", "bar", true},
+		"FOO_URL":  {"mongodb://whatever:4444/db", "whatever", true},
+		"BAR_URL":  {"foo://nope", "nope", true},
 	}
 
 	l := converter.Linker{}
 
 	for envKey, caseVal := range cases {
 		match := l.FindServiceString(envKey, caseVal.value)
-		if caseVal.shouldMatch && match == "" {
-			t.Errorf("Expected an match for %q, got nothing.", caseVal.value)
-		} else if match != "" && !caseVal.shouldMatch {
-			t.Errorf("Expected no match for %q, got: %v", caseVal.value, match)
+		if caseVal.shouldMatch && match != caseVal.expected {
+			t.Errorf("Expected a match for %q, got nothing.", caseVal.value)
 		}
 	}
 }
