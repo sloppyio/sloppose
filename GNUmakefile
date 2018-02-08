@@ -16,7 +16,7 @@ define zip
 endef
 
 test:
-	go test -v -race -timeout 30s -covermode=count -coverprofile=coverage.txt ./pkg/...
+	go test -v -race -timeout 30s -covermode=atomic -coverprofile=coverage.txt ./pkg/...
 
 coverage-show:
 	go tool cover -html=coverage.txt
