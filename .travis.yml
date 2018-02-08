@@ -6,7 +6,7 @@ env:
     secure: Y9aTqi9M4feJ5NORAIZqkILS7O9rSEW8g5kKjabJOsz635H5HryP8HCQKR7PZt81dfXEIR+Ox3k26rgml5fzPUAg+aXp5rSCM0HuHqIQlY7Yixuv2aMP2mVjll/SrUEAonXUm3GLWprZs7YtW72RNKLREvrZfal++Or8n327qfM9O19tmsUT9ADES8H6WhPHt2KVUJ+JtmAtTONAZru3c9jVlcRiR33Mx/wwonXosP2nm0QxuTeiiQtQE8fM0bHvQl/WSLvcG6+SqmBkuITWL4eNRoTeDACcY+Ev9f14G+4fi+8z6RQ3aSDmbO/6DYFinLWA8Y3LbbcKEVS0iCml3uPHoBcOw8s7arMFu4pUCV8ag/6xXPjNRXEZl+DaF4QNp9VWabK6fnuKuCc8Wl5iLuguZe9GSz/3MPKbK6b3C+dQBwOv729uxqmO07VL/y4EpdE/FF/pSuBfZKEBxMT2dYX283cnz9YJkdakM+dEW/Nqsa1rGwoTbo+EWhNK/IbX3tyASFvkzc286GBZMLgzMpYwyyihmd+CKq7QzXK5faCsVWAVJMacdSwVA9arzvnWIqVFPQjqMt+rskwkh1lOo06wSNfu4sOPIaKPa3ekdCxMxMg6gcck3RiJUC4tF2Mm6vHs+2tm8YExmf690eGlZmXKRp0uKLqDfHroyedNNHc=
 sudo: required
 go:
-- 1.8.3
+- 1.9.4
 - tip
 install:
 - go get golang.org/x/tools/cmd/cover github.com/mattn/goveralls

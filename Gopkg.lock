@@ -10,12 +10,33 @@
 [[projects]]
   branch = "master"
   name = "github.com/aanand/compose-file"
-  packages = ["interpolation","loader","schema","template","types"]
+  packages = [
+    "interpolation",
+    "loader",
+    "schema",
+    "template",
+    "types"
+  ]
   revision = "8b762b24ea40ea5ceda5aac2dd1cd465d0fe6d42"
 
 [[projects]]
   name = "github.com/docker/docker"
-  packages = ["api/types","api/types/blkiodev","api/types/container","api/types/filters","api/types/mount","api/types/network","api/types/registry","api/types/strslice","api/types/swarm","api/types/versions","opts","pkg/signal","pkg/urlutil","runconfig/opts"]
+  packages = [
+    "api/types",
+    "api/types/blkiodev",
+    "api/types/container",
+    "api/types/filters",
+    "api/types/mount",
+    "api/types/network",
+    "api/types/registry",
+    "api/types/strslice",
+    "api/types/swarm",
+    "api/types/versions",
+    "opts",
+    "pkg/signal",
+    "pkg/urlutil",
+    "runconfig/opts"
+  ]
   revision = "092cba3727bb9b4a2f0e922cd6c0f93ea270e363"
   version = "v1.13.1"
 
@@ -34,7 +55,16 @@
 [[projects]]
   branch = "master"
   name = "github.com/docker/libcompose"
-  packages = ["config","logger","lookup","project","project/events","project/options","utils","yaml"]
+  packages = [
+    "config",
+    "logger",
+    "lookup",
+    "project",
+    "project/events",
+    "project/options",
+    "utils",
+    "yaml"
+  ]
   revision = "1b708aac26a4fc6f9bff31728a8e3a252ef57dbd"
 
 [[projects]]
@@ -52,7 +82,11 @@
 [[projects]]
   branch = "master"
   name = "github.com/google/go-cmp"
-  packages = ["cmp","cmp/internal/diff","cmp/internal/value"]
+  packages = [
+    "cmp",
+    "cmp/internal/diff",
+    "cmp/internal/value"
+  ]
   revision = "a9cc2ea1d957ce7e952bfdc3efe805184ce85972"
 
 [[projects]]
@@ -75,9 +109,9 @@
 
 [[projects]]
   name = "github.com/sloppyio/cli"
-  packages = ["src/api"]
-  revision = "cb1f169a744da4d5481233f81c1e4a44d56a39de"
-  version = "v1.8.0"
+  packages = ["pkg/api"]
+  revision = "cc24563c2fae5c404a4ab0ad21341b8b4e0a0c07"
+  version = "1.9.1"
 
 [[projects]]
   name = "github.com/spf13/pflag"
@@ -124,6 +158,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8503ee3b47cdafdc16b7e0f1cf00a707df88ee8047ffe1cb396530ea2d6b0f3b"
+  inputs-digest = "97eecb30cc85ccd8a45ff28b94589b2d083dd342ddee68add05d147039458805"
   solver-name = "gps-cdcl"
   solver-version = 1

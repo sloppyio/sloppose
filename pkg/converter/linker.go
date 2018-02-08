@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	sloppy "github.com/sloppyio/cli/src/api"
+	sloppy "github.com/sloppyio/cli/pkg/api"
 )
 
 const (

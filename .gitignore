@@ -4,9 +4,10 @@
 /profile.out
 /coverage.txt
 /sloppose
+/build
 
-# Special case, we are just interested in sloppyio sourceCode
+# Special case, we are just interested in sloppyio api client sourceCode
 vendor/github.com/sloppyio/cli/*
-!vendor/github.com/sloppyio/cli/src
+!vendor/github.com/sloppyio/cli/pkg
 
 *.zip

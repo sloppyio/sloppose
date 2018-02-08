@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	compose "github.com/docker/libcompose/yaml"
-	sloppy "github.com/sloppyio/cli/src/api"
+	sloppy "github.com/sloppyio/cli/pkg/api"
 )
 
 type SloppyApps map[string]*SloppyApp

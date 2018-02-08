@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	sloppy "github.com/sloppyio/cli/src/api"
+	sloppy "github.com/sloppyio/cli/pkg/api"
 	"github.com/sloppyio/sloppose/pkg/converter"
 )
 
