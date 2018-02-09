@@ -1,0 +1,7 @@
+version: "2"
+
+services:
+  busy_env:
+    # sloppose does not support the build property
+    build: ./Dockerfile.example
+    command: "sleep 20"

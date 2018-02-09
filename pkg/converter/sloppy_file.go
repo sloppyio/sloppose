@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"errors"
 	"fmt"
 	"sort"
 	"strconv"
@@ -8,6 +9,10 @@ import (
 
 	compose "github.com/docker/libcompose/yaml"
 	sloppy "github.com/sloppyio/cli/pkg/api"
+)
+
+var (
+	ErrBuildNotSupported = errors.New("the build property is not supported, please specify an image instead")
 )
 
 type SloppyApps map[string]*SloppyApp
@@ -53,6 +58,10 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 	}
 
 	for service, config := range cf.ServiceConfigs.All() {
+		if config.Build.Context != "" {
+			return nil, ErrBuildNotSupported
+		}
+
 		var uri *string
 		if config.DomainName != "" {
 			uri = &config.DomainName
@@ -136,7 +145,7 @@ func (sf *SloppyFile) convertPorts(ports []string) (pm []*sloppy.PortMap, err er
 	for _, portMap := range ports {
 		var port int
 		if strings.Index(portMap, "-") > -1 {
-			return nil, fmt.Errorf("Port ranges are not supported: %q", portMap)
+			return nil, fmt.Errorf("port ranges are not supported: %q", portMap)
 		}
 		if strings.Index(portMap, sep) > -1 {
 			port, err = strconv.Atoi(strings.Split(portMap, sep)[1])
