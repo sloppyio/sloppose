@@ -1,6 +1,7 @@
 package converter
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -14,6 +15,11 @@ const (
 	EnvComposeProjectName = "COMPOSE_PROJECT_NAME"
 )
 
+var (
+	ErrFileRequired   = errors.New("at least one read file is required")
+	ErrMissingVersion = errors.New("missing version declaration in compose file")
+)
+
 type ComposeFile struct {
 	ProjectName    string
 	ServiceConfigs *config.ServiceConfigs
@@ -25,7 +31,7 @@ type composeVersion struct {
 
 func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err error) {
 	if len(buf) == 0 {
-		return nil, fmt.Errorf("At least one readed file is required")
+		return nil, ErrFileRequired
 	}
 
 	composeVersion, err := cf.parseVersion(buf[0])
@@ -46,7 +52,7 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 	case "2":
 		cf, err = loader.LoadVersion2(buf)
 	default:
-		err = fmt.Errorf("missing version declaration in compose file")
+		err = ErrMissingVersion
 	}
 	if err != nil {
 		return

@@ -50,7 +50,6 @@ func (c *Convert) Run(args []string) error {
 
 	sf, err := converter.NewSloppyFile(cf)
 	if err != nil {
-		println(err)
 		return err
 	}
 
