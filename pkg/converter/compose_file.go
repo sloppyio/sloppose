@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/docker/libcompose/config"
 	"github.com/ghodss/yaml"
@@ -40,7 +41,7 @@ func NewComposeFile(buf [][]byte, projectName string) (cf *ComposeFile, err erro
 	}
 
 	loader := &ComposeLoader{}
-	switch composeVersion {
+	switch strings.Split(composeVersion, ".")[0] {
 	case "3":
 		cf, err = loader.LoadVersion3(buf)
 	case "2":

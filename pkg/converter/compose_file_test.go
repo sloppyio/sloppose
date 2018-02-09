@@ -47,6 +47,25 @@ func TestNewComposeV3File(t *testing.T) {
 	}
 }
 
+func TestNewComposeV3dot0File(t *testing.T) {
+	helper := test.NewHelper(t)
+	r := helper.GetTestFile("docker-compose-v3-0.yml")
+	defer r.Close()
+	b, err := ioutil.ReadAll(r)
+	helper.Must(err)
+
+	cf, err := converter.NewComposeFile([][]byte{b}, "")
+	helper.Must(err)
+
+	services := []string{"busy_env"}
+	for _, service := range services {
+		_, found := cf.ServiceConfigs.Get(service)
+		if !found {
+			t.Errorf("Couldn't find service %q", service)
+		}
+	}
+}
+
 func TestNewComposeVersionFile(t *testing.T) {
 	reader := &converter.ComposeReader{}
 	b, err := reader.Read("/testdata/docker-compose-version.yml")

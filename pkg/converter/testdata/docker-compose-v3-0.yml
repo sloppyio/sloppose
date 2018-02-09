@@ -1,0 +1,11 @@
+version: "3.0"
+
+services:
+  busy_env:
+    image: busybox
+    env_file: testdata/test.env
+    command: ["sleep", "20"]
+    depends_on:
+      - mongo
+  mongo:
+    image: mongodb

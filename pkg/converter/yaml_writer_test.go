@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
 	"github.com/sloppyio/sloppose/internal/test"
 	"github.com/sloppyio/sloppose/pkg/converter"
 )
