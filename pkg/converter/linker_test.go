@@ -79,6 +79,51 @@ func TestLinker_Resolve(t *testing.T) {
 
 }
 
+func TestLinker_ResolveUsrPwd(t *testing.T) {
+	linker := &converter.Linker{}
+	name := "sloppy-test"
+
+	expected := &converter.SloppyFile{
+		Version: "v1",
+		Project: name,
+		Services: map[string]converter.SloppyApps{
+			"apps": {
+				"a": &converter.SloppyApp{
+					App: &sloppy.App{
+						Dependencies: []string{"../apps/b"},
+						EnvVars: map[string]string{
+							"API_AUTH": fmt.Sprintf("https://admin:pass@b.apps.%s:443", name),
+							"API_URL":  fmt.Sprintf("b.apps.%s:443", name),
+						},
+						Image: ToStrPtr("hugo"),
+					},
+					Env: converter.SloppyEnvSlice{
+						{"API_AUTH": fmt.Sprintf("https://admin:pass@b.apps.%s:443", name)},
+						{"API_URL": fmt.Sprintf("b.apps.%s:443", name)},
+					},
+				},
+				"b": &converter.SloppyApp{
+					App: &sloppy.App{
+						Image: ToStrPtr("go:rulez"),
+					},
+					Port: ToIntPtr(4443),
+				},
+			},
+		},
+	}
+
+	cf, sf := loadSloppyFile("/testdata/fixture_linker1.yml")
+	err := linker.Resolve(cf, sf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(sf, expected); diff != "" {
+		t.Errorf("Result differs: (-got +want)\n%s", diff)
+	}
+
+}
+
 func ToIntPtr(i int) *int {
 	return &i
 }

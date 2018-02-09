@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  a:
+    image: hugo
+    environment:
+    - API_URL=b:443
+    # even if this is not a html standard and are not supported by any major browser
+    - API_AUTH=https://admin:pass@b:443
+  b:
+    image: go:rulez
+    ports:
+    - 443:4443
