@@ -1,5 +1,6 @@
 .DEFAULT_GOAL := all
 
+GOVERSION := 1.9.4
 BUILDPATH := ./build
 SRCPATH := ./cmd
 APPNAME := sloppose
@@ -26,6 +27,9 @@ coverage-stats:
 
 coverage-report:
 	goveralls -coverprofile=coverage.txt -service=travis-ci
+
+dev-osx:
+	docker run -v $(CURDIR):/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e GOOS=darwin golang:$(GOVERSION) make build-dev
 
 build-dev:
 	go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0`" -o ./$(APPNAME) $(SRCPATH)

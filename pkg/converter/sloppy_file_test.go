@@ -18,13 +18,17 @@ var testFiles = []string{
 	"docker-compose-v3.yml",
 }
 
-func loadSloppyFile(filename string) (cf *converter.ComposeFile, sf *converter.SloppyFile) {
+func loadComposeFile(filename, projectname string) (*converter.ComposeFile, error) {
 	reader := &converter.ComposeReader{}
 	b, err := reader.Read(filename)
 	if err != nil {
 		panic(err)
 	}
-	cf, err = converter.NewComposeFile([][]byte{b}, "sloppy-test")
+	return converter.NewComposeFile([][]byte{b}, projectname)
+}
+
+func loadSloppyFile(filename string) (cf *converter.ComposeFile, sf *converter.SloppyFile) {
+	cf, err := loadComposeFile(filename, "sloppy-test")
 	if err != nil {
 		panic(err)
 	}
@@ -87,5 +91,17 @@ func TestNewSloppyFileInvalidPorts(t *testing.T) {
 		if err == nil {
 			t.Errorf("Expected a port related error, got nothing.")
 		}
+	}
+}
+
+func TestNewComposeFileBuildProperty(t *testing.T) {
+	helper := test.NewHelper(t)
+	cf, err := loadComposeFile("testdata/docker-compose-v2-reject.yml", "no-build-supported")
+	helper.Must(err)
+	_, err = converter.NewSloppyFile(cf)
+	if err == nil {
+		t.Errorf("Expected an error with a build property within compose file.")
+	} else if err.Error() != converter.ErrBuildNotSupported.Error() {
+		t.Errorf(`Expected: %q, got: "%v"`, converter.ErrBuildNotSupported.Error(), err)
 	}
 }

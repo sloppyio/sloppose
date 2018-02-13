@@ -26,4 +26,8 @@ Checkout to `$GOPATH/src/github.com/sloppyio/sloppose`
 
 Create a development build within the Go environment: `make build-dev`
 
-Create an osx build with docker: `docker run -v $PWD:/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e GOOS=darwin golang:1.8.3 make build-dev`
+Create an osx build with docker: `make dev-osx`
+
+or:
+
+`docker run -v $PWD:/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e GOOS=darwin golang:1.9.4 make build-dev`

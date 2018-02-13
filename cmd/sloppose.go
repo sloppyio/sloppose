@@ -27,13 +27,12 @@ func main() {
 		}
 		err = cmd.Run(args[1:])
 		if err != nil {
-			fmt.Println("Error:", err.Error())
+			fmt.Printf("Error: %s\n\n", err.Error())
 			fmt.Println(cmd.Help())
 		}
 	} else {
 		usage()
 	}
-
 }
 
 func fatal(err error) {
