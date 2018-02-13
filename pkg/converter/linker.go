@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	fqdnTemplate    = "%s.%s.%s"                       // app.service.project
-	hostPortPattern = `([a-z]+[a-z0-9._-]*)(:[0-9]+)?` // sloppy appName conform
+	fqdnTemplate    = "%s.%s.%s"                          // app.service.project
+	hostPortPattern = `([a-z][a-z0-9._-]*)(:[0-9]{2,5})?` // sloppy appName conform
 	schemePattern   = `^(\w+)(:\/\/)+`
 )
 
@@ -50,13 +50,19 @@ func (l *Linker) GetByApp(name string) *link {
 }
 
 func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
+	const at = "@"
 	l.buildLinks(sf)
 
 	// resolve possible connections
 	for _, link := range l.links {
 		for key, val := range link.app.App.EnvVars {
 			app := link.app.App
-			match := l.FindServiceString(key, val)
+			var match string
+			if strings.Contains(val, at) { // handling admin:pass@urls
+				match = l.FindServiceString(key, strings.Split(val, at)[1])
+			} else {
+				match = l.FindServiceString(key, val)
+			}
 			if match == "" {
 				continue
 			}
