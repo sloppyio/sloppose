@@ -23,8 +23,3 @@
 [prune]
   non-go = true
   go-tests = true
-
-
-[[constraint]]
-  name = "github.com/docker/libcompose"
-  branch = "master"
