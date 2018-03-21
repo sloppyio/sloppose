@@ -14,7 +14,6 @@ import (
 
 // output should be the same as described above
 var testFiles = []string{
-	"docker-compose-v2.yml",
 	"docker-compose-v3.yml",
 }
 
@@ -24,7 +23,7 @@ func loadComposeFile(filename, projectname string) (*converter.ComposeFile, erro
 	if err != nil {
 		panic(err)
 	}
-	return converter.NewComposeFile([][]byte{b}, projectname)
+	return converter.NewComposeFile(b, projectname)
 }
 
 func loadSloppyFile(filename string) (cf *converter.ComposeFile, sf *converter.SloppyFile) {
@@ -85,7 +84,7 @@ func TestNewSloppyFileInvalidPorts(t *testing.T) {
 		bytes, err := ioutil.ReadAll(file)
 		file.Close()
 		helper.Must(err)
-		cf, err := converter.NewComposeFile([][]byte{bytes}, "")
+		cf, err := converter.NewComposeFile(bytes, "")
 		helper.Must(err)
 		_, err = converter.NewSloppyFile(cf)
 		if err == nil {
@@ -96,7 +95,7 @@ func TestNewSloppyFileInvalidPorts(t *testing.T) {
 
 func TestNewComposeFileBuildProperty(t *testing.T) {
 	helper := test.NewHelper(t)
-	cf, err := loadComposeFile("testdata/docker-compose-v2-reject.yml", "no-build-supported")
+	cf, err := loadComposeFile("testdata/docker-compose-v3-reject.yml", "no-build-supported")
 	helper.Must(err)
 	_, err = converter.NewSloppyFile(cf)
 	if err == nil {
