@@ -30,18 +30,3 @@ func (cr *ComposeReader) Read(filename string) ([]byte, error) {
 
 	return bytes, nil
 }
-
-func (cr *ComposeReader) ReadAll(fileNames []string) (b [][]byte, err error) {
-	files := fileNames[:]
-	if len(files) == 0 {
-		files = append(files, defaultFileName)
-	}
-	for _, file := range files {
-		bytes, err := cr.Read(file)
-		if err != nil {
-			return nil, err
-		}
-		b = append(b, bytes)
-	}
-	return
-}

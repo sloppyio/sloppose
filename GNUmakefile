@@ -6,7 +6,7 @@ SRCPATH := ./cmd
 APPNAME := sloppose
 VERSION_NAMESPACE := github.com/sloppyio/sloppose/command
 
-.PHONY: all test build-dev osx linux win clean
+.PHONY: all generate test build-dev osx linux win clean
 
 define build
 	GOOS=$(1) GOARCH=$(2) go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0` -X ${VERSION_NAMESPACE}.BuildName=`git log -1 --format=%h`" -o $(BUILDPATH)/$(APPNAME)_$(1)_$(2)$(3) $(SRCPATH)
@@ -17,7 +17,7 @@ define zip
 endef
 
 test:
-	go test -v -race -timeout 30s -covermode=atomic -coverprofile=coverage.txt ./pkg/...
+	go test -v -race -timeout 30s -covermode=atomic -coverprofile=coverage.txt ./pkg/converter
 
 coverage-show:
 	go tool cover -html=coverage.txt
@@ -33,6 +33,9 @@ dev-osx:
 
 build-dev:
 	go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0`" -o ./$(APPNAME) $(SRCPATH)
+
+generate:
+	go run pkg/config/schemas/generate.go
 
 osx:
 	@echo "Building osx binaries..."

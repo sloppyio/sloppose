@@ -38,7 +38,7 @@ func (c *Convert) Run(args []string) error {
 	}
 
 	reader := &converter.ComposeReader{}
-	buf, err := reader.ReadAll(flagSet.Args())
+	buf, err := reader.Read(flagSet.Args()[0])
 	if err != nil {
 		return err
 	}

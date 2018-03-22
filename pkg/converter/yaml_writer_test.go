@@ -22,7 +22,7 @@ func init() {
 
 func TestYAMLWriter_WriteFile(t *testing.T) {
 	helper := test.NewHelper(t)
-	_, sf := loadSloppyFile("testdata/docker-compose-v2.yml")
+	_, sf := loadSloppyFile("testdata/docker-compose-v3.yml")
 	writer := &converter.YAMLWriter{}
 	helper.ChdirTemp()
 	err := writer.WriteFile(sf, "test-tmp")

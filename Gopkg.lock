@@ -2,78 +2,6 @@
 
 
 [[projects]]
-  name = "github.com/Sirupsen/logrus"
-  packages = ["."]
-  revision = "a3f95b5c423586578a4e099b11a46c2479628cac"
-  version = "1.0.2"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/aanand/compose-file"
-  packages = [
-    "interpolation",
-    "loader",
-    "schema",
-    "template",
-    "types"
-  ]
-  revision = "8b762b24ea40ea5ceda5aac2dd1cd465d0fe6d42"
-
-[[projects]]
-  name = "github.com/docker/docker"
-  packages = [
-    "api/types",
-    "api/types/blkiodev",
-    "api/types/container",
-    "api/types/filters",
-    "api/types/mount",
-    "api/types/network",
-    "api/types/registry",
-    "api/types/strslice",
-    "api/types/swarm",
-    "api/types/versions",
-    "opts",
-    "pkg/signal",
-    "pkg/urlutil",
-    "runconfig/opts"
-  ]
-  revision = "092cba3727bb9b4a2f0e922cd6c0f93ea270e363"
-  version = "v1.13.1"
-
-[[projects]]
-  name = "github.com/docker/go-connections"
-  packages = ["nat"]
-  revision = "990a1a1a70b0da4c4cb70e117971a4f0babfbf1a"
-  version = "v0.2.1"
-
-[[projects]]
-  name = "github.com/docker/go-units"
-  packages = ["."]
-  revision = "f2d77a61e3c169b43402a0a1e84f06daf29b8190"
-  version = "v0.3.1"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/docker/libcompose"
-  packages = [
-    "config",
-    "logger",
-    "lookup",
-    "project",
-    "project/events",
-    "project/options",
-    "utils",
-    "yaml"
-  ]
-  revision = "1b708aac26a4fc6f9bff31728a8e3a252ef57dbd"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/flynn/go-shlex"
-  packages = ["."]
-  revision = "3f9db97f856818214da2e1057f8ad84803971cff"
-
-[[projects]]
   name = "github.com/ghodss/yaml"
   packages = ["."]
   revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
@@ -90,64 +18,16 @@
   revision = "a9cc2ea1d957ce7e952bfdc3efe805184ce85972"
 
 [[projects]]
-  name = "github.com/mattn/go-shellwords"
-  packages = ["."]
-  revision = "02e3cf038dcea8290e44424da473dd12be796a8a"
-  version = "v1.0.3"
-
-[[projects]]
   branch = "master"
-  name = "github.com/mitchellh/mapstructure"
+  name = "github.com/sevenval/structgen"
   packages = ["."]
-  revision = "d0303fe809921458f417bcf828397a65db30a7e4"
-
-[[projects]]
-  name = "github.com/pkg/errors"
-  packages = ["."]
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "2d758f7cbfbe900f0b49b288b1cc87a848aecc19"
 
 [[projects]]
   name = "github.com/sloppyio/cli"
   packages = ["pkg/api"]
   revision = "cc24563c2fae5c404a4ab0ad21341b8b4e0a0c07"
   version = "1.9.1"
-
-[[projects]]
-  name = "github.com/spf13/pflag"
-  packages = ["."]
-  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
-  version = "v1.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/xeipuuv/gojsonpointer"
-  packages = ["."]
-  revision = "6fe8760cad3569743d51ddbb243b26f8456742dc"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/xeipuuv/gojsonreference"
-  packages = ["."]
-  revision = "e02fc20de94c78484cd5ffb007f8af96be030a45"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/xeipuuv/gojsonschema"
-  packages = ["."]
-  revision = "0c8571ac0ce161a5feb57375a9cdf148c98c0f70"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = ["context"]
-  revision = "f5079bd7f6f74e23c4d65efa0f4ce14cbd6a3c0f"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sys"
-  packages = ["unix"]
-  revision = "396c9fc8fb0ce27fc7a1ff136dc5af797bba258a"
 
 [[projects]]
   branch = "v2"
@@ -158,6 +38,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "97eecb30cc85ccd8a45ff28b94589b2d083dd342ddee68add05d147039458805"
+  inputs-digest = "d3c624a317fb7c0c049a17f52621208a20b280517a9bc69378e1d40930c9bc86"
   solver-name = "gps-cdcl"
   solver-version = 1

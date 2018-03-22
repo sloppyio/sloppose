@@ -4,7 +4,7 @@
 
 Small tool to convert docker-compose files to sloppy.io compatible ones.
 
-Supports docker-compose versions **2** and **3**.
+Supports docker-compose version **3**.
 
 ## Usage
 

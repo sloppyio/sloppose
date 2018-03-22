@@ -106,21 +106,19 @@ func (l *Linker) Resolve(cf *ComposeFile, sf *SloppyFile) error {
 		}
 
 		// also considering DependsOn from compose
-		if conf, ok := cf.ServiceConfigs.Get(link.appName); ok {
-			if len(conf.DependsOn) > 0 {
-				for _, dep := range conf.DependsOn {
-					t := l.GetByApp(dep)
-					if t == nil {
-						return newDependencyError(`Couldn't find related service %q declared in "depends_on"`, dep)
-					}
-					link.app.Dependencies = l.appendDependency(link.app, t.fqdn)
+		if conf, ok := cf.ServiceConfigs[link.appName]; ok && conf.DependsOn != nil {
+			depends := conf.DependsOn.([]interface{})
+			for _, d := range depends {
+				dep := d.(string)
+				t := l.GetByApp(dep)
+				if t == nil {
+					return newDependencyError(`Couldn't find related service %q declared in "depends_on"`, dep)
 				}
+				link.app.Dependencies = l.appendDependency(link.app, t.fqdn)
 			}
 		}
 	}
-
 	sf.sortFields()
-
 	return nil
 }
 
