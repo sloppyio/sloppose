@@ -6,7 +6,7 @@ SRCPATH := ./cmd
 APPNAME := sloppose
 VERSION_NAMESPACE := github.com/sloppyio/sloppose/command
 
-.PHONY: all generate test build-dev osx linux win clean
+.PHONY: all generate test test-update build-dev osx linux win clean
 
 define build
 	GOOS=$(1) GOARCH=$(2) go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0` -X ${VERSION_NAMESPACE}.BuildName=`git log -1 --format=%h`" -o $(BUILDPATH)/$(APPNAME)_$(1)_$(2)$(3) $(SRCPATH)
@@ -18,6 +18,10 @@ endef
 
 test:
 	go test -v -race -timeout 30s -covermode=atomic -coverprofile=coverage.txt ./pkg/converter
+
+test-update:
+	@echo updating golden file...
+	go test -v -timeout 30s ./pkg/converter -update
 
 coverage-show:
 	go tool cover -html=coverage.txt

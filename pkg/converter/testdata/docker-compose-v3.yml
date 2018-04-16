@@ -27,7 +27,7 @@ services:
      resources:
        limits:
          cpus: '0.001'
-         memory: 128M
+         memory: 49152k
        reservations:
          cpus: '0.0001'
          memory: 64M
@@ -57,6 +57,10 @@ services:
        syslog-address: "udp://192.168.0.42:123"
   mongo:
     image: mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2G
 volumes:
     db:
     content:

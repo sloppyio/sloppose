@@ -28,6 +28,7 @@ services:
       - container_path: /var/lib/mysql
     mongo:
       image: mongodb
+      mem: 2048
     wordpress:
       dependencies:
       - ../apps/db
@@ -37,6 +38,8 @@ services:
       - WORDPRESS_DB_PASSWORD: wordpress
       - WORDPRESS_DB_USER: wordpress
       image: wordpress:4.7.4
+      instances: 3
+      mem: 64
       port: 80
       volumes:
       - container_path: /var/www/html

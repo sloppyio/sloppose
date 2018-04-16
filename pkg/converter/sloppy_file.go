@@ -3,6 +3,8 @@ package converter
 import (
 	"errors"
 	"fmt"
+	"math"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
@@ -148,6 +150,20 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 			app.Port = portMappings[0].Port
 		}
 
+		if config.Deploy != nil {
+			if config.Deploy.Replicas > 0 {
+				app.Instances = &config.Deploy.Replicas
+			}
+			if config.Deploy.Resources != nil &&
+				config.Deploy.Resources.Limits != nil {
+				var err error
+				app.Memory, err = sf.convertMemoryResource(config.Deploy.Resources.Limits.Memory)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+
 		// TODO implement service to compose-file mapping
 		// Possible option to map multiple compose-files to own sloppy services
 		// instead of the current default "apps"
@@ -170,6 +186,35 @@ func (sf *SloppyFile) convertCommand(cmd []interface{}) *string {
 		}
 	}
 	return &str
+}
+
+var resourceMemRegex = regexp.MustCompile(`^(\d+)([bkmgBKMG]){1}$`)
+
+func (sf *SloppyFile) convertMemoryResource(res string) (*int, error) {
+	const lowestMem float64 = 64 // lowest mem size sloppy.io supports
+	match := resourceMemRegex.FindStringSubmatch(res)
+	if len(match) == 3 {
+		memResource, err := strconv.Atoi(match[1])
+		if err != nil {
+			return nil, err
+		}
+		unit := strings.ToLower(match[2])
+		var mem int
+		switch unit {
+		case "b":
+			mem = int(math.Max(float64(memResource/1024/1024), lowestMem))
+		case "k":
+			mem = int(math.Max(float64(memResource/1024), lowestMem))
+		case "m":
+			mem = memResource
+		case "g":
+			mem = memResource * 1024
+		default:
+			return nil, fmt.Errorf("convert resources: unsupported memory format: %q", res)
+		}
+		return &mem, nil
+	}
+	return nil, nil
 }
 
 func (sf *SloppyFile) convertPorts(ports []string) (pm []*sloppy.PortMap, err error) {
