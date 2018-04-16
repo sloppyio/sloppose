@@ -188,10 +188,11 @@ func (sf *SloppyFile) convertCommand(cmd []interface{}) *string {
 	return &str
 }
 
-var resourceMemRegex = regexp.MustCompile(`^(\d+)([bkmgBKMG]){1}$`)
+var resourceMemRegex = regexp.MustCompile(`^(\d+)([bkmgBKMG])$`)
 
 func (sf *SloppyFile) convertMemoryResource(res string) (*int, error) {
 	const lowestMem float64 = 64 // lowest mem size sloppy.io supports
+	formatErr := fmt.Errorf(`convert resource failed: unsupported memory format: %q in "Deploy.Resources.Limits.Memory"`, res)
 	match := resourceMemRegex.FindStringSubmatch(res)
 	if len(match) == 3 {
 		memResource, err := strconv.Atoi(match[1])
@@ -210,11 +211,11 @@ func (sf *SloppyFile) convertMemoryResource(res string) (*int, error) {
 		case "g":
 			mem = memResource * 1024
 		default:
-			return nil, fmt.Errorf("convert resources: unsupported memory format: %q", res)
+			return nil, formatErr
 		}
 		return &mem, nil
 	}
-	return nil, nil
+	return nil, formatErr
 }
 
 func (sf *SloppyFile) convertPorts(ports []string) (pm []*sloppy.PortMap, err error) {
