@@ -73,16 +73,39 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 			},
 		}
 
+		// Entrypoint (string or list)
+		// Prepend to the following commands
+		switch config.Entrypoint.(type) {
+		case string:
+			c := config.Entrypoint.(string)
+			app.App.Command = &c
+		case []interface{}:
+			c := config.Entrypoint.([]interface{})
+			if len(c) > 0 {
+				app.App.Command = sf.convertCommand(c)
+			}
+		}
+
 		// Assign possible empty values in extra steps to hide empty object from output
 		// Commands (string or list)
 		switch config.Command.(type) {
 		case string:
 			c := config.Command.(string)
-			app.App.Command = &c
+			if app.App.Command != nil {
+				cmd := fmt.Sprintf("%s %s", *app.App.Command, c)
+				app.App.Command = &cmd
+			} else {
+				app.App.Command = &c
+			}
 		case []interface{}:
 			c := config.Command.([]interface{})
 			if len(c) > 0 {
-				app.App.Command = sf.convertCommand(c)
+				if app.App.Command != nil {
+					cmd := fmt.Sprintf("%s %s", *app.App.Command, *sf.convertCommand(c))
+					app.App.Command = &cmd
+				} else {
+					app.App.Command = sf.convertCommand(c)
+				}
 			}
 		}
 
