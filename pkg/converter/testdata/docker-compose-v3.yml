@@ -57,6 +57,8 @@ services:
        syslog-address: "udp://192.168.0.42:123"
   mongo:
     image: mongodb
+    ports:
+      - 27017 # container port
 volumes:
     db:
     content:

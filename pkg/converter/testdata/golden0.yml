@@ -28,6 +28,7 @@ services:
       - container_path: /var/lib/mysql
     mongo:
       image: mongodb
+      port: 27017
     wordpress:
       dependencies:
       - ../apps/db

@@ -133,6 +133,8 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 				switch entry.(type) { // number, string, obj
 				case string:
 					ports = append(ports, entry.(string))
+				case float64:
+					ports = append(ports, strconv.Itoa(int(entry.(float64))))
 				case int:
 					p := strconv.Itoa(entry.(int))
 					ports = append(ports, p)
