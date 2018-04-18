@@ -30,6 +30,7 @@ services:
       cmd: mongod
       image: mongodb
       mem: 2048
+      port: 27017
     wordpress:
       cmd: /code/entrypoint.sh -foo bar
       dependencies:

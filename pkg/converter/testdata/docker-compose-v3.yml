@@ -64,6 +64,8 @@ services:
         limits:
           memory: 2G
     command: mongod
+    ports:
+      - 27017 # container port
 volumes:
     db:
     content:
