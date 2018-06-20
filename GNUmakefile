@@ -35,6 +35,9 @@ coverage-report:
 dev-osx:
 	docker run -v $(CURDIR):/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e GOOS=darwin golang:$(GOVERSION) make build-dev
 
+test-in-docker:
+	docker run -v $(CURDIR):/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e CGO_ENABLED=1 golang:$(GOVERSION) make test
+
 build-dev:
 	go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0`" -o ./$(APPNAME) $(SRCPATH)
 

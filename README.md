@@ -28,10 +28,4 @@ Create a development build within the Go environment: `make build-dev`
 
 Create an osx build with docker: `make dev-osx`
 
-or:
-
-`docker run -v $PWD:/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e GOOS=darwin golang:1.9.4 make build-dev`
-
-To run tests with Docker:
-
-`docker run -v $PWD:/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e CGO_ENABLED=1 golang:1.9.4 make test`
+To run tests with Docker: `test-in-docker`
