@@ -44,5 +44,6 @@ services:
       instances: 3
       mem: 64
       port: 80
+      ssl: true
       volumes:
       - container_path: /var/www/html
