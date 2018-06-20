@@ -115,6 +115,7 @@ func NewSloppyFile(cf *ComposeFile) (*SloppyFile, error) {
 		if uri != nil {
 			app.App.Domain = &sloppy.Domain{URI: uri}
 			app.Domain = uri
+			app.SSL = sloppy.Bool(true)
 		}
 
 		if envList, ok := config.Environment.([]interface{}); ok {
