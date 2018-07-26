@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/sloppyio/sloppose.svg?branch=master)](https://travis-ci.org/sloppyio/sloppose) [![Coverage Status](https://coveralls.io/repos/github/sloppyio/sloppose/badge.svg?branch=master)](https://coveralls.io/github/sloppyio/sloppose?branch=master)
 
-Small tool to convert docker-compose files to sloppy.io compatible ones.
+Library to convert docker-compose files to sloppy.io compatible ones. Integrated into the sloppy.io CLI ([learn more](https://kb.sloppy.io/features/cli-command-reference/12-start)). Can also be used as a standalone tool for one-time conversions.
 
 Supports docker-compose version **3**.
 
