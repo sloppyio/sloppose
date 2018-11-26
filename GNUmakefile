@@ -38,6 +38,9 @@ dev-osx:
 test-in-docker:
 	docker run -v $(CURDIR):/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e CGO_ENABLED=1 golang:$(GOVERSION) make test
 
+update-vendor:
+	docker run -v $(CURDIR):/go/src/github.com/sloppyio/sloppose --workdir /go/src/github.com/sloppyio/sloppose -e CGO_ENABLED=1 sloppy/go-cross:latest dep ensure -update github.com/sloppyio/cli
+
 build-dev:
 	go build -ldflags "-X ${VERSION_NAMESPACE}.VersionName=`git describe --exact-match --abbrev=0`" -o ./$(APPNAME) $(SRCPATH)
 

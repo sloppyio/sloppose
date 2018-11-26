@@ -26,8 +26,8 @@
 [[projects]]
   name = "github.com/sloppyio/cli"
   packages = ["pkg/api"]
-  revision = "cc24563c2fae5c404a4ab0ad21341b8b4e0a0c07"
-  version = "1.9.1"
+  revision = "d6bc0b9017df3d65ba761b317ddfd9148f2449e7"
+  version = "v1.12.0"
 
 [[projects]]
   branch = "v2"
